@@ -1179,6 +1179,39 @@
             0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
             100% { transform: translateY(1000px) rotate(720deg); opacity: 0; }
         }
+
+        /* Source link button */
+        .source-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(74, 107, 255, 0.08), rgba(123, 104, 238, 0.08));
+            border: 1.5px solid rgba(74, 107, 255, 0.35);
+            border-radius: 50px;
+            color: var(--primary-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            backdrop-filter: blur(4px);
+            letter-spacing: 0.3px;
+        }
+
+        .source-link-btn:hover {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(74, 107, 255, 0.35);
+            text-decoration: none;
+        }
+
+        .source-link-btn i {
+            font-size: 0.85rem;
+        }
     </style>
 </head>
 <body>
@@ -1236,6 +1269,9 @@
                 <div class="question-card">
                     <div class="question-header">
                         <div class="question-number" id="question-number">1</div>
+                        <a id="source-link-btn" class="source-link-btn" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+                            <i class="fas fa-external-link-alt"></i> Xem câu hỏi gốc
+                        </a>
                     </div>
                     <div class="question-content" id="question-content">Question content will appear here</div>
                     <div class="options-container" id="options-container">
@@ -1369,6 +1405,7 @@
             retakeBtn: document.getElementById('retake-btn'),
             reviewBtn: document.getElementById('review-btn'),
             resultsBtn: document.getElementById('results-btn'),
+            sourceLinkBtn: document.getElementById('source-link-btn'),
             toast: document.getElementById('toast')
         };
 
@@ -1815,6 +1852,7 @@
                 return {
                     id: item.id || index + 1,
                     question: formatMarkdown(formatCodeBlocks(item.question || '')),
+                    link: item.link || null,
                     options: Array.isArray(item.options) ? item.options.map(option => formatMarkdown(formatCodeBlocks(option))) : [],
                     answer: Array.isArray(item.answer) ? item.answer : (typeof item.answer === 'number' ? [item.answer] : []),
                     explanation: formatMarkdown(formatCodeBlocks(item.explanation || '')),
@@ -1905,6 +1943,14 @@
             // Add multiple indicator if needed
             elements.questionNumber.classList.toggle('multiple', 
                 Array.isArray(question.answer) && question.answer.length > 1);
+            
+            // Update source link button
+            if (question.link) {
+                elements.sourceLinkBtn.href = question.link;
+                elements.sourceLinkBtn.style.display = 'inline-flex';
+            } else {
+                elements.sourceLinkBtn.style.display = 'none';
+            }
             
             elements.questionContent.innerHTML = question.question;
 

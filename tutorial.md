@@ -1,6 +1,6 @@
 # Tutorial: Creating Quiz Questions for the Pro Quiz Master Application
 
-This tutorial explains how to create quiz questions in the correct format for the Pro Quiz Master application. The application uses a specific JSON structure and supports special formatting features including SQL code blocks and markdown-like syntax.
+This tutorial explains how to create quiz questions in the correct format for the Pro Quiz Master application. The application uses a specific JSON structure and supports special formatting features including Java/SQL code blocks and markdown-like syntax.
 
 ## JSON Structure Overview
 
@@ -11,15 +11,17 @@ Each quiz is a JSON array containing question objects. Here's the basic structur
   {
     "id": 1,
     "question": "Your question text here",
+    "link": "https://www.examveda.com/...",
     "options": [
       "Option A",
       "Option B",
       "Option C",
       "Option D"
     ],
-    "answer": [0, 1],
+    "answer": [0],
     "explanation": "Explanation text",
-    "pitfall": "Common pitfall information"
+    "pitfall": "Common pitfall information",
+    "difficulty": "easy"
   }
 ]
 ```
@@ -35,9 +37,14 @@ Each quiz is a JSON array containing question objects. Here's the basic structur
 
 ### Optional Properties
 
-1. **explanation** (string): Detailed explanation of the correct answer(s)
-2. **pitfall** (string): Information about common mistakes or misconceptions
-3. **difficulty** (string): Difficulty level ("easy", "medium", "hard") - defaults to "medium"
+1. **link** (string): URL to the original source page of the question. When provided, a **"Xem câu hỏi gốc"** button appears in the question header allowing users to visit the original source. The app accepts **any valid URL** — there is no domain filter in code. As a project convention, only questions from these validated sources should be used:
+   - `https://www.examveda.com/`
+   - `https://ocpjp.jobs4times.com/`
+   - `https://www.indiabix.com/java-programming`
+   - `https://www.sanfoundry.com/java-questions-answers-freshers-experienced/`
+2. **explanation** (string): Detailed explanation of the correct answer(s). Appears when user answers correctly, or after clicking "Xem Lời Giải" if answered incorrectly
+3. **pitfall** (string): Information about common mistakes or misconceptions
+4. **difficulty** (string): Difficulty level (`"easy"`, `"medium"`, `"hard"`) — stored in memory but **not currently displayed in the UI**; defaults to `"medium"`
 
 ## Special Formatting Features
 
@@ -45,7 +52,21 @@ The application supports special formatting that enhances the presentation of te
 
 ### Code Blocks (Java, SQL, etc.)
 
-To include code in your questions, options, explanations, or pitfalls, wrap the code with triple backticks followed by the programming language (e.g., `java`, `sql`, `javascript`). The application will render these in a premium, macOS-style window container with a prominent highlighted border (including a thick left border accent), custom syntax highlighting, and a language indicator badge with a representative icon (e.g. Java coffee cup) at the bottom-right corner:
+To include code in your questions, options, explanations, or pitfalls, wrap the code with triple backticks followed by the language identifier. The application will render these in a premium macOS-style window container with:
+- Thick left-border accent
+- Syntax highlighting (for `java` and `sql` only — other languages get an icon but no coloring)
+- Copy button
+- Language badge with icon at the bottom-right
+
+Supported language identifiers:
+| Identifier | Syntax Highlight | Icon |
+|-----------|-----------------|------|
+| `java` | Yes (keywords, types, strings, numbers, comments) | Java coffee cup |
+| `sql` | Yes (keywords, strings, numbers, comments) | Database icon |
+| `javascript` / `js` | No (icon only) | JS icon |
+| `html` | No (icon only) | HTML5 icon |
+| `css` | No (icon only) | CSS3 icon |
+| *(anything else)* | No | Generic code icon |
 
 ```markdown
 ```java
@@ -61,6 +82,7 @@ Example in a question:
 ```json
 {
   "id": 1,
+  "link": "https://www.examveda.com/...",
   "question": "What is the output of this Java code snippet? ```java System.out.println(10 + 20 + \"Java\"); ```",
   "options": [
     "30Java",
@@ -70,33 +92,17 @@ Example in a question:
   ],
   "answer": [0],
   "explanation": "The expression is evaluated from left to right. First, `10 + 20` is evaluated as integer addition resulting in `30`. Then, `30 + \"Java\"` performs string concatenation, resulting in `30Java`.",
-  "pitfall": "Common pitfall: assuming string concatenation happens first, which would result in `1020Java`."
+  "pitfall": "Common pitfall: assuming string concatenation happens first, which would result in `1020Java`.",
+  "difficulty": "medium"
 }
 ```
 
 ### Bold Text Formatting
 
-To emphasize text with bold formatting, wrap it with double asterisks:
+To emphasize text, wrap it with double asterisks. Bold text renders in uppercase with the primary color:
 
 ```markdown
 **This text will be bold and uppercase**
-```
-
-Example:
-```json
-{
-  "id": 2,
-  "question": "Which **SQL** keyword is used to sort results?",
-  "options": [
-    "**ORDER BY**",
-    "**SORT**",
-    "**ARRANGE**",
-    "**SEQUENCE**"
-  ],
-  "answer": [0],
-  "explanation": "The **ORDER BY** clause is used to sort the result set in ascending or descending order.",
-  "pitfall": "Common pitfall: confusing **ORDER BY** with **GROUP BY**, which is used for grouping rows rather than sorting."
-}
 ```
 
 ### Inline Code Formatting
@@ -107,85 +113,97 @@ To highlight technical terms or code snippets inline, wrap them with single back
 Use the `SELECT` statement to retrieve data
 ```
 
-Example:
-```json
-{
-  "id": 3,
-  "question": "Which SQL command retrieves data from a database?",
-  "options": [
-    "`GET`",
-    "`FETCH`",
-    "`SELECT`",
-    "`RETRIEVE`"
-  ],
-  "answer": [2],
-  "explanation": "The `SELECT` statement is the standard SQL command for querying data.",
-  "pitfall": "Common pitfall: using `GET` which is not a standard SQL command for data retrieval."
-}
-```
+## UI Behavior
+
+### "Xem câu hỏi gốc" (View Original Question) Button
+
+- Appears in the **top-right of the question header**, next to the question number badge
+- Only visible when the question has a non-empty `"link"` field
+- Opens the original source URL in a **new browser tab**
+- Styled as an elegant pill-shaped button with hover animation
+
+### "Xem Lời Giải" (View Explanation) Button
+
+- Appears **only when the user answers incorrectly**
+- Requires a manual click to reveal the explanation and pitfall sections
+- If the user answers correctly, explanation is shown automatically
+- After quiz submission, all explanations are visible during review
+
+### Answer Marking Logic
+
+- **Correct answers**: highlighted in green
+- **Incorrect selected answers**: highlighted in red
+- **Multiple-answer questions**: badge "M" appears on the question number; user selects multiple options
+- Sidebar question list shows color-coded status (current/answered/correct/incorrect)
 
 ## Complete Example
-
-Here's a complete example showing all formatting features:
 
 ```json
 [
   {
     "id": 1,
-    "question": "What will be the result of executing this **SQL** query? ```sql CREATE TABLE employees (id NUMBER, name VARCHAR2(50)); ```",
+    "question": "Which of this method can be used to make the main thread to be executed last among all the threads?",
+    "link": "https://www.examveda.com/which-of-this-method-can-be-used-to-make-the-main-thread-to-be-executed-last-among-all-the-threads-222232/",
     "options": [
-      "Creates a table named `employees`",
-      "Deletes the `employees` table",
-      "Updates the `employees` table",
-      "Selects data from `employees` table"
+      "stop()",
+      "sleep()",
+      "join()",
+      "call()"
     ],
-    "answer": [0],
-    "explanation": "The **CREATE TABLE** statement creates a new table. In this case, it creates an `employees` table with two columns: `id` of type NUMBER and `name` of type VARCHAR2(50).",
-    "pitfall": "Common pitfall: forgetting the column definitions which would cause a syntax error. The correct syntax requires specifying column names and data types."
+    "answer": [2],
+    "explanation": "**LỜI GIẢI CHI TIẾT**\n\n`join()` is used to wait for a thread to finish execution before the current thread continues.",
+    "pitfall": "**LƯU Ý / PITFALL**\n\nSai lầm phổ biến: nhầm `sleep()` với `join()` vì cả hai đều làm thread hiện tại tạm dừng.",
+    "difficulty": "easy"
   },
   {
     "id": 2,
-    "question": "Which three statements are true about **UNDO** tablespaces? (Choose three.)",
+    "question": "Which three statements are true about Java threads? (Choose three.)",
+    "link": "https://ocpjp.jobs4times.com/multiThread.html",
     "options": [
-      "**UNDO** retention guarantees are never overridden",
-      "Active **UNDO** is always retained",
-      "**UNDO** segments are automatically managed",
-      "Multiple **UNDO** tablespaces can be active simultaneously",
-      "An instance crash occurs if the active **UNDO** tablespace is lost"
+      "A thread can be started more than once",
+      "Threads share the same heap memory",
+      "Each thread has its own stack",
+      "The `synchronized` keyword prevents deadlock",
+      "A thread enters the blocked state when waiting for a monitor lock"
     ],
     "answer": [1, 2, 4],
-    "explanation": "Correct answers are: **B**, **C**, and **E**. Active **UNDO** is always retained to maintain transaction consistency. **UNDO** segments are automatically managed by Oracle. If the active **UNDO** tablespace is lost, the instance will crash to protect data integrity.",
-    "pitfall": "Common pitfall: selecting option **A**. **UNDO** retention guarantees can be overridden in emergency situations to prevent transaction failures."
+    "explanation": "**B**, **C**, and **E** are correct. Threads share heap memory but each has its own stack. A thread enters the blocked state when waiting for a monitor lock.",
+    "pitfall": "Common pitfall: confusing blocked and waiting states, and assuming `synchronized` prevents deadlock — it does not.",
+    "difficulty": "hard"
   }
 ]
 ```
 
 ## Best Practices
 
-1. **Use descriptive IDs**: While not strictly required, using sequential IDs helps with organization
-2. **Clear questions**: Make sure your questions are unambiguous
-3. **Plausible distractors**: Incorrect options should be reasonable to prevent guessing
-4. **Comprehensive explanations**: Provide detailed explanations that help users understand the concept
-5. **Meaningful pitfalls**: Identify common mistakes or misconceptions that users should avoid
-6. **Consistent formatting**: Use the formatting features consistently throughout your quiz
-7. **Test your JSON**: Ensure your JSON is valid before importing into the application
+1. **Use descriptive IDs**: Sequential IDs help with organization and link mapping
+2. **Always include a validated link**: Use only the 4 accepted source domains listed above
+3. **Clear questions**: Make sure your questions are unambiguous
+4. **Plausible distractors**: Incorrect options should be reasonable to prevent guessing
+5. **Comprehensive explanations**: Start with a short summary, then analyze each option (A/B/C/D)
+6. **Meaningful pitfalls**: Identify the most common mistake related to the question topic
+7. **No icons in text**: Do not use emoji or special icons (✅, ❌, etc.) in explanation or pitfall text
+8. **Consistent formatting**: Use `**bold**` for headers and key terms, backtick for inline code
+9. **Test your JSON**: Ensure your JSON is valid before importing
 
 ## Testing Your Questions
 
 1. Validate your JSON structure using a JSON validator
-2. Test the import in the Pro Quiz Master application
-3. Verify that all formatting (SQL code blocks, bold text, inline code) displays correctly
-4. Check that explanations and pitfalls appear when reviewing questions
-5. Confirm that the correct answers are properly marked
+2. Import into Pro Quiz Master by uploading the `.json` file or pasting in the text area
+3. Verify that code blocks display with syntax highlighting
+4. Click "Xem câu hỏi gốc" to confirm the link opens correctly
+5. Answer a question incorrectly to verify the "Xem Lời Giải" button appears
+6. Confirm that multiple-answer questions show the "M" badge
 
 ## Troubleshooting
 
 If your questions don't import correctly:
 
 1. Check for JSON syntax errors (missing commas, unmatched brackets, etc.)
-2. Ensure all text is properly escaped (especially quotes within strings)
+2. Ensure all text is properly escaped (especially backslashes `\\` and quotes `\"` within strings)
 3. Verify that answer indices match the options array (0-based indexing)
-4. Make sure SQL code blocks use the correct ```sql syntax
-5. Confirm that markdown formatting uses the correct **bold** and `inline` syntax
+4. Make sure code blocks use the correct ` ```java ` or ` ```sql ` syntax
+5. Confirm the `"link"` field uses a full URL starting with `https://`
+6. The app has auto-fix for common backslash escaping issues — check the browser console for messages
 
 By following this tutorial, you can create engaging, well-formatted technical quizzes that take full advantage of the Pro Quiz Master application's features.
