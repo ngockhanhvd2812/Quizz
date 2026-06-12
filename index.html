@@ -470,52 +470,124 @@
             color: #d63384;
         }
 
-        .question-content pre.sql-code {
-            background: #2d2d2d;
-            border: 1px solid #555;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
-            overflow-x: auto;
-            white-space: pre;
-            color: #f8f8f2;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        .code-window {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 2px solid rgba(74, 107, 255, 0.45);
+            border-left: 8px solid var(--primary-color);
+            border-radius: 16px;
+            margin: 25px 0;
+            box-shadow: 0 15px 35px rgba(74, 107, 255, 0.08), 
+                        0 5px 15px rgba(0, 0, 0, 0.03),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            padding-top: 30px;
         }
 
-        .question-content pre.sql-code:before {
-            content: 'SQL';
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: #ff6b6b;
-            color: white;
-            padding: 2px 10px;
-            font-size: 0.8rem;
-            border-radius: 8px 0 0 0;
-            font-weight: bold;
+        .code-window:hover {
+            box-shadow: 0 20px 40px rgba(74, 107, 255, 0.16), 
+                        0 8px 20px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+            border-color: rgba(74, 107, 255, 0.75);
+            border-left-color: var(--secondary-color);
         }
 
-        .question-content pre.sql-code .copy-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: rgba(248, 250, 252, 0.5);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            position: relative;
+        }
+
+        .window-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .window-buttons .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .window-buttons .dot.close { background: #ff5f56; }
+        .window-buttons .dot.minimize { background: #ffbd2e; }
+        .window-buttons .dot.expand { background: #27c93f; }
+
+        .code-window .copy-btn {
+            background: white;
+            color: #4a6bff;
+            border: 1px solid rgba(74, 107, 255, 0.15);
+            border-radius: 8px;
+            padding: 5px 12px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .code-window .copy-btn:hover {
             background: #4a6bff;
             color: white;
-            border: none;
-            border-radius: 0 8px 0 8px;
-            padding: 2px 10px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            border-color: #4a6bff;
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(74, 107, 255, 0.15);
         }
 
-        .question-content pre.sql-code .copy-btn:hover {
-            background: #3a5be0;
+        pre.code-block {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            padding: 20px !important;
+            padding-bottom: 40px !important;
+            margin: 0 !important;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.95rem;
+            overflow-x: auto;
+            white-space: pre;
+            color: #334155;
+            text-align: left;
+            width: 100%;
         }
+
+        .lang-badge-bottom {
+            position: absolute;
+            bottom: 10px;
+            right: 16px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #4a6bff;
+            background: rgba(74, 107, 255, 0.08);
+            padding: 4px 12px;
+            border-radius: 50px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            border: 1px solid rgba(74, 107, 255, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 4px rgba(74, 107, 255, 0.05);
+        }
+
+        /* Light-theme Syntax Highlighting */
+        .token.keyword { color: #7c3aed; font-weight: 600; }     /* Royal purple */
+        .token.string { color: #0d9488; }                      /* Premium Teal */
+        .token.number { color: #ea580c; }                      /* Amber Orange */
+        .token.comment { color: #94a3b8; font-style: italic; } /* Slate grey */
+        .token.type { color: #0284c7; font-weight: 600; }        /* Sky blue */
 
         .options-container {
             display: grid;
@@ -538,52 +610,22 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
-        .option-text pre.sql-code {
-            background: #2d2d2d;
-            border: 1px solid #555;
-            border-radius: 8px;
+        .option-text pre.code-block {
             padding: 10px;
             margin: 10px 0;
-            font-family: 'Courier New', monospace;
             font-size: 0.8rem;
-            overflow-x: auto;
-            white-space: pre;
-            color: #f8f8f2;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            position: relative;
             padding-top: 25px;
-            max-width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .option-text pre.sql-code:before {
-            content: 'SQL';
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: #ff6b6b;
-            color: white;
+        .option-text pre.code-block:before {
             padding: 2px 8px;
             font-size: 0.7rem;
-            border-radius: 8px 0 0 0;
-            font-weight: bold;
         }
 
-        .option-text pre.sql-code .copy-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: #4a6bff;
-            color: white;
-            border: none;
-            border-radius: 0 8px 0 8px;
+        .option-text pre.code-block .copy-btn {
             padding: 2px 8px;
             font-size: 0.7rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .option-text pre.sql-code .copy-btn:hover {
-            background: #3a5be0;
         }
 
         .option-text .md-bold {
@@ -714,52 +756,7 @@
             color: #d63384;
         }
 
-        .explanation-content pre.sql-code {
-            background: #2d2d2d;
-            border: 1px solid #555;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
-            white-space: pre;
-            color: #f8f8f2;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            position: relative;
-            padding-top: 30px;
-        }
-
-        .explanation-content pre.sql-code:before {
-            content: 'SQL';
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: #ff6b6b;
-            color: white;
-            padding: 2px 10px;
-            font-size: 0.8rem;
-            border-radius: 8px 0 0 0;
-            font-weight: bold;
-        }
-
-        .explanation-content pre.sql-code .copy-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: #4a6bff;
-            color: white;
-            border: none;
-            border-radius: 0 8px 0 8px;
-            padding: 2px 10px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .explanation-content pre.sql-code .copy-btn:hover {
-            background: #3a5be0;
-        }
+        /* Unified code block styles used instead */
 
         .pitfall-section {
             background: #fff8e1;
@@ -808,52 +805,7 @@
             color: #d63384;
         }
 
-        .pitfall-content pre.sql-code {
-            background: #2d2d2d;
-            border: 1px solid #555;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
-            white-space: pre;
-            color: #f8f8f2;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            position: relative;
-            padding-top: 30px;
-        }
-
-        .pitfall-content pre.sql-code:before {
-            content: 'SQL';
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: #ff6b6b;
-            color: white;
-            padding: 2px 10px;
-            font-size: 0.8rem;
-            border-radius: 8px 0 0 0;
-            font-weight: bold;
-        }
-
-        .pitfall-content pre.sql-code .copy-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: #4a6bff;
-            color: white;
-            border: none;
-            border-radius: 0 8px 0 8px;
-            padding: 2px 10px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .pitfall-content pre.sql-code .copy-btn:hover {
-            background: #3a5be0;
-        }
+        /* Unified code block styles used instead */
 
         .navigation-controls {
             display: flex;
@@ -1289,12 +1241,17 @@
                     <div class="options-container" id="options-container">
                         <!-- Options will be inserted here by JavaScript -->
                     </div>
+                    <!-- Action button to show explanation if answered incorrectly -->
+                    <button class="btn btn-outline" id="show-explanation-btn" style="display: none; margin-top: 25px; width: 100%; border: 2px solid var(--accent-color); color: var(--accent-color); box-shadow: 0 5px 15px rgba(255, 107, 107, 0.15); font-weight: 600;" title="Xem giải thích và lỗi thường gặp">
+                        <i class="fas fa-eye"></i> Xem Lời Giải
+                    </button>
+
                     <div class="explanation-section" id="explanation-section">
-                        <h3 class="explanation-title"><i class="fas fa-info-circle"></i> Explanation</h3>
+                        <h3 class="explanation-title">Explanation</h3>
                         <div class="explanation-content" id="explanation-content">Explanation will appear after answering.</div>
                     </div>
                     <div class="pitfall-section" id="pitfall-section">
-                        <h3 class="pitfall-title"><i class="fas fa-exclamation-triangle"></i> Common Pitfall</h3>
+                        <h3 class="pitfall-title">Common Pitfall</h3>
                         <div class="pitfall-content" id="pitfall-content">Common pitfall information will appear after answering.</div>
                     </div>
                 </div>
@@ -1305,6 +1262,9 @@
                     </button>
                     <button class="btn btn-outline" id="shuffle-btn" title="Shuffle Questions (S Key)">
                         <i class="fas fa-random"></i> Shuffle
+                    </button>
+                    <button class="btn btn-outline" id="results-btn" style="display: none;" title="Back to Results">
+                        <i class="fas fa-chart-bar"></i> Results
                     </button>
                     <button class="btn btn-primary" id="next-btn" title="Next Question (Right Arrow Key)">
                         Next <i class="fas fa-arrow-right"></i>
@@ -1352,6 +1312,9 @@
             </div>
 
             <div class="action-buttons">
+                <button class="btn btn-outline" id="review-btn">
+                    <i class="fas fa-eye"></i> Review Answers
+                </button>
                 <button class="btn btn-primary" id="retake-btn">
                     <i class="fas fa-redo"></i> Retake Quiz
                 </button>
@@ -1368,6 +1331,7 @@
         let currentState = {
             currentQuestionIndex: 0,
             userAnswers: [],
+            revealedExplanations: [], // Tracks which incorrect questions have explanations revealed
             examCompleted: false
         };
 
@@ -1384,6 +1348,7 @@
             optionsContainer: document.getElementById('options-container'),
             explanationSection: document.getElementById('explanation-section'),
             explanationContent: document.getElementById('explanation-content'),
+            showExplanationBtn: document.getElementById('show-explanation-btn'),
             pitfallSection: document.getElementById('pitfall-section'),
             pitfallContent: document.getElementById('pitfall-content'),
             answeredCount: document.getElementById('answered-count'),
@@ -1402,6 +1367,8 @@
             resultsIncorrect: document.getElementById('results-incorrect'),
             resultsAccuracy: document.getElementById('results-accuracy'),
             retakeBtn: document.getElementById('retake-btn'),
+            reviewBtn: document.getElementById('review-btn'),
+            resultsBtn: document.getElementById('results-btn'),
             toast: document.getElementById('toast')
         };
 
@@ -1518,6 +1485,14 @@
         elements.shuffleBtn.addEventListener('click', shuffleQuiz);
         elements.submitBtn.addEventListener('click', completeQuiz);
         elements.retakeBtn.addEventListener('click', retakeQuiz);
+        elements.reviewBtn.addEventListener('click', reviewAnswers);
+        elements.resultsBtn.addEventListener('click', backToResults);
+        elements.showExplanationBtn.addEventListener('click', () => {
+            const index = currentState.currentQuestionIndex;
+            currentState.revealedExplanations[index] = true;
+            elements.showExplanationBtn.style.display = 'none';
+            showExplanation();
+        });
         
         // Add event listener for text input
         document.getElementById('json-text').addEventListener('input', handleTextChange);
@@ -1628,29 +1603,180 @@
             return fixed;
         }
 
-        // Function to format SQL code blocks
-        function formatSqlCode(text) {
+        // Helper function to escape HTML characters
+        function escapeHtml(text) {
             if (!text) return '';
-            // Replace SQL code blocks with HTML formatted version
-            return text.replace(/```sql\s*([\s\S]*?)\s*```/g, '<pre class="sql-code"><button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button><code>$1</code></pre>');
+            return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // Lightweight Syntax Highlighter for Java & SQL
+        function highlightSyntax(code, lang) {
+            if (!code) return '';
+            
+            const normalizedLang = (lang || '').toLowerCase();
+            let html = escapeHtml(code);
+            
+            if (normalizedLang === 'java') {
+                const placeholders = [];
+                
+                // 1. Temporarily extract comments
+                html = html.replace(/(\/\*[\s\S]*?\*\/)/g, (match) => {
+                    placeholders.push(`<span class="token comment">${match}</span>`);
+                    return `___TOKEN_PLACEHOLDER_${placeholders.length - 1}___`;
+                });
+                html = html.replace(/(\/\/.*)/g, (match) => {
+                    placeholders.push(`<span class="token comment">${match}</span>`);
+                    return `___TOKEN_PLACEHOLDER_${placeholders.length - 1}___`;
+                });
+                
+                // 2. Temporarily extract strings
+                html = html.replace(/("(?:[^"\\]|\\.)*")/g, (match) => {
+                    placeholders.push(`<span class="token string">${match}</span>`);
+                    return `___TOKEN_PLACEHOLDER_${placeholders.length - 1}___`;
+                });
+
+                // 3. Highlight keywords (when there are NO HTML tags yet!)
+                const keywords = [
+                    'public', 'private', 'protected', 'class', 'interface', 'extends', 'implements',
+                    'static', 'final', 'void', 'int', 'double', 'float', 'char', 'boolean', 'byte', 'short', 'long',
+                    'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'default', 'break', 'continue',
+                    'return', 'new', 'import', 'package', 'this', 'super', 'try', 'catch', 'finally', 'throw', 'throws',
+                    'instanceof', 'volatile', 'synchronized', 'transient', 'native', 'strictfp'
+                ];
+                
+                keywords.forEach(keyword => {
+                    const regex = new RegExp('\\b' + keyword + '\\b', 'g');
+                    html = html.replace(regex, `__KEYWORD_START__${keyword}__KEYWORD_END__`);
+                });
+
+                // 4. Highlight class names/types (starting with uppercase letter)
+                html = html.replace(/\b([A-Z][a-zA-Z0-9]*)\b/g, (match) => {
+                    if (match.startsWith('___TOKEN_PLACEHOLDER_') || match.startsWith('__KEYWORD_')) return match;
+                    return `__TYPE_START__${match}__TYPE_END__`;
+                });
+
+                // 5. Highlight numeric literals
+                html = html.replace(/\b(\d+)\b/g, (match) => {
+                    return `__NUMBER_START__${match}__NUMBER_END__`;
+                });
+
+                // Convert the placeholders to actual HTML tags
+                html = html.replace(/__KEYWORD_START__(.*?)__KEYWORD_END__/g, '<span class="token keyword">$1</span>');
+                html = html.replace(/__TYPE_START__(.*?)__TYPE_END__/g, '<span class="token type">$1</span>');
+                html = html.replace(/__NUMBER_START__(.*?)__NUMBER_END__/g, '<span class="token number">$1</span>');
+                
+                // 6. Restore comments and strings
+                for (let i = 0; i < placeholders.length; i++) {
+                    html = html.replace(`___TOKEN_PLACEHOLDER_${i}___`, placeholders[i]);
+                }
+            } else if (normalizedLang === 'sql') {
+                const placeholders = [];
+                
+                // 1. Comments
+                html = html.replace(/(--.*)/g, (match) => {
+                    placeholders.push(`<span class="token comment">${match}</span>`);
+                    return `___TOKEN_PLACEHOLDER_${placeholders.length - 1}___`;
+                });
+                
+                // 2. Strings
+                html = html.replace(/('(?:[^'\\]|\\.)*')/g, (match) => {
+                    placeholders.push(`<span class="token string">${match}</span>`);
+                    return `___TOKEN_PLACEHOLDER_${placeholders.length - 1}___`;
+                });
+                html = html.replace(/("(?:[^"\\]|\\.)*")/g, (match) => {
+                    placeholders.push(`<span class="token string">${match}</span>`);
+                    return `___TOKEN_PLACEHOLDER_${placeholders.length - 1}___`;
+                });
+                
+                // 3. Keywords
+                const sqlKeywords = [
+                    'select', 'insert', 'update', 'delete', 'from', 'where', 'and', 'or', 'not', 'order', 'by',
+                    'group', 'having', 'join', 'left', 'right', 'inner', 'outer', 'on', 'create', 'table', 'drop',
+                    'alter', 'primary', 'key', 'foreign', 'references', 'default', 'null', 'into', 'values', 'set',
+                    'index', 'view', 'trigger', 'procedure', 'function', 'database', 'as', 'distinct', 'union',
+                    'all', 'any', 'exists', 'in', 'between', 'like', 'is', 'null', 'true', 'false', 'boolean',
+                    'number', 'varchar2', 'varchar', 'char', 'int', 'date', 'timestamp', 'count', 'sum', 'avg',
+                    'min', 'max', 'truncate', 'grant', 'revoke', 'commit', 'rollback', 'savepoint'
+                ];
+                
+                sqlKeywords.forEach(keyword => {
+                    const regex = new RegExp('\\b' + keyword + '\\b', 'gi');
+                    html = html.replace(regex, (match) => `__KEYWORD_START__${match}__KEYWORD_END__`);
+                });
+                
+                // 4. Numbers
+                html = html.replace(/\b(\d+)\b/g, (match) => {
+                    return `__NUMBER_START__${match}__NUMBER_END__`;
+                });
+                
+                // Convert
+                html = html.replace(/__KEYWORD_START__(.*?)__KEYWORD_END__/g, '<span class="token keyword">$1</span>');
+                html = html.replace(/__NUMBER_START__(.*?)__NUMBER_END__/g, '<span class="token number">$1</span>');
+                
+                // 5. Restore
+                for (let i = 0; i < placeholders.length; i++) {
+                    html = html.replace(`___TOKEN_PLACEHOLDER_${i}___`, placeholders[i]);
+                }
+            }
+            
+            return html;
+        }
+
+        // Helper function to map programming languages to FontAwesome icons
+        function getLanguageIconClass(lang) {
+            const l = (lang || '').toLowerCase();
+            if (l === 'java') return 'fab fa-java';
+            if (l === 'sql') return 'fas fa-database';
+            if (l === 'javascript' || l === 'js') return 'fab fa-js';
+            if (l === 'html') return 'fab fa-html5';
+            if (l === 'css') return 'fab fa-css3-alt';
+            return 'fas fa-code';
+        }
+
+        // Function to format code blocks (SQL, Java, etc.)
+        function formatCodeBlocks(text) {
+            if (!text) return '';
+            // Replace code blocks with HTML formatted version
+            return text.replace(/```(\w*)\s*([\s\S]*?)\s*```/g, (match, lang, code) => {
+                const displayLang = lang ? lang.toUpperCase() : 'CODE';
+                const iconClass = getLanguageIconClass(lang);
+                const highlightedCode = highlightSyntax(code, lang);
+                return `<div class="code-window"><div class="code-header"><div class="window-buttons"><span class="dot close"></span><span class="dot minimize"></span><span class="dot expand"></span></div><button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button></div><pre class="code-block"><code>${highlightedCode}</code></pre><div class="lang-badge-bottom"><i class="${iconClass}"></i> ${displayLang}</div></div>`;
+            });
         }
 
         // Function to format markdown-like text
         function formatMarkdown(text) {
             if (!text) return '';
             
-            // Format **text** as uppercase with bold styling
+            // Temporarily extract code windows to preserve their formatting
+            const codeWindowBlocks = [];
+            text = text.replace(/<div class="code-window"[\s\S]*?<\/div>/g, match => {
+                codeWindowBlocks.push(match);
+                return `__CODE_WINDOW_PLACEHOLDER_${codeWindowBlocks.length - 1}__`;
+            });
+            
+            // Format **text** as bold
             text = text.replace(/\*\*(.*?)\*\*/g, '<strong class="md-bold">$1</strong>');
             
             // Format `text` as inline code
             text = text.replace(/`(.*?)`/g, '<code class="md-code">$1</code>');
+            
+            // Format newlines as HTML line breaks
+            text = text.replace(/\n/g, '<br>');
+            
+            // Restore code windows
+            text = text.replace(/__CODE_WINDOW_PLACEHOLDER_(\d+)__/g, (match, index) => {
+                return codeWindowBlocks[parseInt(index, 10)];
+            });
             
             return text;
         }
 
         // Function to copy code to clipboard
         function copyCode(button) {
-            const codeBlock = button.nextSibling;
+            const codeWindow = button.closest('.code-window');
+            const codeBlock = codeWindow ? codeWindow.querySelector('code') : (button.nextSibling || button.parentNode.querySelector('code'));
             const text = codeBlock.textContent || codeBlock.innerText;
             
             navigator.clipboard.writeText(text).then(() => {
@@ -1688,11 +1814,11 @@
             return data.map((item, index) => {
                 return {
                     id: item.id || index + 1,
-                    question: formatMarkdown(formatSqlCode(item.question || '')),
-                    options: Array.isArray(item.options) ? item.options.map(option => formatMarkdown(formatSqlCode(option))) : [],
+                    question: formatMarkdown(formatCodeBlocks(item.question || '')),
+                    options: Array.isArray(item.options) ? item.options.map(option => formatMarkdown(formatCodeBlocks(option))) : [],
                     answer: Array.isArray(item.answer) ? item.answer : (typeof item.answer === 'number' ? [item.answer] : []),
-                    explanation: formatMarkdown(formatSqlCode(item.explanation || '')),
-                    pitfall: formatMarkdown(formatSqlCode(item.pitfall || '')),
+                    explanation: formatMarkdown(formatCodeBlocks(item.explanation || '')),
+                    pitfall: formatMarkdown(formatCodeBlocks(item.pitfall || '')),
                     difficulty: item.difficulty || 'medium'
                 };
             });
@@ -1707,6 +1833,7 @@
 
             // Initialize state
             currentState.userAnswers = Array(questions.length).fill(null);
+            currentState.revealedExplanations = Array(questions.length).fill(false);
             currentState.currentQuestionIndex = 0;
             currentState.examCompleted = false;
 
@@ -1755,7 +1882,9 @@
                 if (index === currentState.currentQuestionIndex) {
                     item.classList.add('current');
                 }
-                if (currentState.userAnswers[index] !== null) {
+                const userAnswer = currentState.userAnswers[index];
+                const isAnswered = (userAnswer !== null && (!Array.isArray(userAnswer) || userAnswer.length > 0)) || currentState.examCompleted;
+                if (isAnswered) {
                     item.classList.add('answered');
                     item.classList.add(isAnswerCorrect(index) ? 'correct' : 'incorrect');
                 }
@@ -1786,20 +1915,49 @@
             updateOptionSelections();
 
             // Show explanation and pitfall when reviewing answered questions
-            if (currentState.userAnswers[index] !== null || currentState.examCompleted) {
-                showExplanation();
+            const userAnswer = currentState.userAnswers[index];
+            const isAnswered = (userAnswer !== null && (!Array.isArray(userAnswer) || userAnswer.length > 0)) || currentState.examCompleted;
+            
+            // Hide the Xem Lời Giải button by default
+            elements.showExplanationBtn.style.display = 'none';
+
+            if (isAnswered) {
+                const isCorrect = isAnswerCorrect(index);
+                const isRevealed = currentState.revealedExplanations[index] || isCorrect || currentState.examCompleted;
+                
+                if (isRevealed) {
+                    showExplanation();
+                } else {
+                    // Answer is incorrect and not revealed yet -> hide explanation and show toggle button
+                    elements.explanationSection.classList.remove('show');
+                    elements.pitfallSection.classList.remove('show');
+                    elements.showExplanationBtn.style.display = 'inline-flex';
+                }
             } else {
                 // Hide explanation and pitfall for unanswered questions
                 elements.explanationSection.classList.remove('show');
                 elements.pitfallSection.classList.remove('show');
+                
+                // Reset explanation content to placeholders
+                elements.explanationContent.innerHTML = 'Explanation will appear after answering.';
+                elements.pitfallContent.innerHTML = 'Common pitfall information will appear after answering.';
             }
 
             // Update navigation
             elements.prevBtn.disabled = index === 0;
             elements.nextBtn.disabled = index === questions.length - 1;
 
-            // Show submit button if on last question
-            if (index === questions.length - 1) {
+            // Toggle Shuffle and Results button based on completion state
+            if (currentState.examCompleted) {
+                elements.shuffleBtn.style.display = 'none';
+                elements.resultsBtn.style.display = 'inline-flex';
+            } else {
+                elements.shuffleBtn.style.display = 'inline-flex';
+                elements.resultsBtn.style.display = 'none';
+            }
+
+            // Show submit button if on last question and quiz not completed
+            if (index === questions.length - 1 && !currentState.examCompleted) {
                 elements.nextBtn.style.display = 'none';
                 elements.submitBtn.style.display = 'inline-flex';
             } else {
@@ -1869,19 +2027,51 @@
             updateOptionSelections();
             updateQuestionList();
             updateStats();
+            
+            // Update explanation visibility or show reveal button immediately upon answering
+            const index = currentState.currentQuestionIndex;
+            const isCorrect = isAnswerCorrect(index);
+            const isRevealed = currentState.revealedExplanations[index] || isCorrect || currentState.examCompleted;
+            
+            if (isRevealed) {
+                showExplanation();
+                elements.showExplanationBtn.style.display = 'none';
+            } else {
+                elements.explanationSection.classList.remove('show');
+                elements.pitfallSection.classList.remove('show');
+                elements.showExplanationBtn.style.display = 'inline-flex';
+            }
         }
 
         // Update option selections
         function updateOptionSelections() {
             const userAnswer = currentState.userAnswers[currentState.currentQuestionIndex];
+            const question = questions[currentState.currentQuestionIndex];
             const optionElements = elements.optionsContainer.querySelectorAll('.option');
+            const isAnswered = (userAnswer !== null && (!Array.isArray(userAnswer) || userAnswer.length > 0)) || currentState.examCompleted;
 
             optionElements.forEach(optionElement => {
                 const optionIdx = parseInt(optionElement.dataset.optionIndex, 10);
                 const isSelected = Array.isArray(userAnswer) 
                     ? userAnswer.includes(optionIdx)
                     : userAnswer === optionIdx;
+                
                 optionElement.classList.toggle('selected', isSelected);
+                
+                // Clear any previous correct/incorrect classes
+                optionElement.classList.remove('correct', 'incorrect');
+                
+                if (isAnswered) {
+                    const isCorrectAnswer = Array.isArray(question.answer)
+                        ? question.answer.includes(optionIdx)
+                        : question.answer === optionIdx;
+                        
+                    if (isCorrectAnswer) {
+                        optionElement.classList.add('correct');
+                    } else if (isSelected) {
+                        optionElement.classList.add('incorrect');
+                    }
+                }
             });
         }
 
@@ -1932,6 +2122,7 @@
             
             // Reset state
             currentState.userAnswers = Array(questions.length).fill(null);
+            currentState.revealedExplanations = Array(questions.length).fill(false);
             currentState.currentQuestionIndex = 0;
             
             // Update UI
@@ -2039,6 +2230,7 @@
         function retakeQuiz() {
             // Reset state
             currentState.userAnswers = Array(questions.length).fill(null);
+            currentState.revealedExplanations = Array(questions.length).fill(false);
             currentState.currentQuestionIndex = 0;
             currentState.examCompleted = false;
 
@@ -2052,6 +2244,22 @@
             createQuestionList();
             
             showToast('Quiz restarted! Good luck!');
+        }
+
+        // Review quiz answers after completion
+        function reviewAnswers() {
+            elements.resultsSection.classList.remove('show');
+            elements.mainContent.style.display = 'flex';
+            
+            // Go to the first question to review
+            displayQuestion(0);
+            updateStats();
+        }
+
+        // Go back to the results screen from review
+        function backToResults() {
+            elements.mainContent.style.display = 'none';
+            elements.resultsSection.classList.add('show');
         }
     </script>
 </body>

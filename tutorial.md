@@ -43,13 +43,17 @@ Each quiz is a JSON array containing question objects. Here's the basic structur
 
 The application supports special formatting that enhances the presentation of technical content.
 
-### SQL Code Blocks
+### Code Blocks (Java, SQL, etc.)
 
-To include SQL code in your questions, options, explanations, or pitfalls, wrap the code with triple backticks followed by "sql":
+To include code in your questions, options, explanations, or pitfalls, wrap the code with triple backticks followed by the programming language (e.g., `java`, `sql`, `javascript`). The application will render these in a premium, macOS-style window container with a prominent highlighted border (including a thick left border accent), custom syntax highlighting, and a language indicator badge with a representative icon (e.g. Java coffee cup) at the bottom-right corner:
 
 ```markdown
-```sql
-SELECT * FROM employees WHERE salary > 50000;
+```java
+public class App {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}
 ```
 ```
 
@@ -57,16 +61,16 @@ Example in a question:
 ```json
 {
   "id": 1,
-  "question": "What does this SQL query do? ```sql SELECT * FROM employees WHERE department = 'IT'; ```",
+  "question": "What is the output of this Java code snippet? ```java System.out.println(10 + 20 + \"Java\"); ```",
   "options": [
-    "Selects all employees",
-    "Selects IT department employees",
-    "Deletes IT department employees",
-    "Updates IT department employees"
+    "30Java",
+    "1020Java",
+    "Java30",
+    "Compilation fails"
   ],
-  "answer": [1],
-  "explanation": "The query ```sql SELECT * FROM employees WHERE department = 'IT'; ``` filters the employees table to show only those in the IT department.",
-  "pitfall": "Common pitfall: forgetting the WHERE clause which would return all employees instead of just IT staff."
+  "answer": [0],
+  "explanation": "The expression is evaluated from left to right. First, `10 + 20` is evaluated as integer addition resulting in `30`. Then, `30 + \"Java\"` performs string concatenation, resulting in `30Java`.",
+  "pitfall": "Common pitfall: assuming string concatenation happens first, which would result in `1020Java`."
 }
 ```
 
