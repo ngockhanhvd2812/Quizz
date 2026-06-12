@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Quiz Master</title>
+    <title>DBA Arena</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #4a6bff;
-            --secondary-color: #7b68ee;
-            --accent-color: #ff6b6b;
-            --success-color: #4cd964;
-            --warning-color: #ffcc00;
-            --danger-color: #ff3b30;
-            --light-color: #f8f9fa;
-            --dark-color: #2c3e50;
-            --card-bg: #ffffff;
-            --bg-gradient: linear-gradient(135deg, #4a6bff, #7b68ee, #9d50ff);
-            --shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            --primary-color: #a855f7;
+            --secondary-color: #ec4899;
+            --accent-color: #06b6d4;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-color: #0f172a;
+            --dark-color: #020617;
+            --card-bg: rgba(30, 41, 59, 0.75);
+            --bg-gradient: linear-gradient(135deg, #070412, #110924, #1a0d36);
+            --shadow: 0 15px 35px rgba(168, 85, 247, 0.15);
             --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             --border-radius: 20px;
-            --card-border: 1px solid rgba(255, 255, 255, 0.2);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         * {
@@ -35,7 +35,7 @@
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
             min-height: 100vh;
-            color: #333;
+            color: #f1f5f9;
             padding: 0;
             line-height: 1.6;
             overflow-x: hidden;
@@ -67,14 +67,14 @@
         .particle {
             position: absolute;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
             animation: float 15s infinite linear;
         }
 
         @keyframes float {
             0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
             100% { transform: translateY(-1000px) translateX(1000px) rotate(720deg); opacity: 0; }
         }
 
@@ -82,7 +82,7 @@
             text-align: center;
             margin-bottom: 30px;
             padding: 30px;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(15, 23, 42, 0.6);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             position: relative;
@@ -95,7 +95,7 @@
 
         header:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         header::before {
@@ -110,7 +110,7 @@
         }
 
         h1 {
-            color: var(--primary-color);
+            color: #ffffff;
             font-size: 2.8rem;
             margin-bottom: 10px;
             display: flex;
@@ -118,12 +118,12 @@
             justify-content: center;
             gap: 15px;
             font-weight: 700;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-shadow: 0 2px 10px rgba(168, 85, 247, 0.3);
         }
 
         .subtitle {
             font-size: 1.2rem;
-            color: #666;
+            color: #cbd5e1;
             font-weight: 400;
         }
 
@@ -217,19 +217,20 @@
             min-height: 180px;
             padding: 20px;
             border-radius: 15px;
-            border: 2px solid #e9ecef;
+            border: 2px solid rgba(255, 255, 255, 0.1);
             font-family: 'Courier New', monospace;
             resize: vertical;
             transition: var(--transition);
             font-size: 1rem;
-            background: #f8f9fa;
+            background: rgba(15, 23, 42, 0.5);
+            color: #cbd5e1;
         }
 
         #json-text:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.2);
-            background: white;
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25);
+            background: rgba(15, 23, 42, 0.7);
         }
 
         .btn {
@@ -337,7 +338,7 @@
 
         .stat-title {
             font-size: 0.95rem;
-            color: #666;
+            color: #cbd5e1;
             margin-bottom: 10px;
             font-weight: 600;
             text-transform: uppercase;
@@ -1212,6 +1213,139 @@
         .source-link-btn i {
             font-size: 0.85rem;
         }
+
+        .db-badges {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .db-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .db-badge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+        }
+
+        .db-badge.oracle {
+            background: linear-gradient(135deg, #ea1c24, #b30006);
+        }
+
+        .db-badge.postgresql {
+            background: linear-gradient(135deg, #336791, #274e6f);
+        }
+
+        .db-badge.mongodb {
+            background: linear-gradient(135deg, #13aa52, #0d7c3c);
+        }
+
+        .db-badge.singlestore {
+            background: linear-gradient(135deg, #ff007f, #b30059);
+        }
+
+        .db-badge.mysql {
+            background: linear-gradient(135deg, #00758f, #005a6d);
+        }
+
+        .db-badge.mssql {
+            background: linear-gradient(135deg, #cc292b, #8b1c1e);
+        }
+
+        .db-badge.redis {
+            background: linear-gradient(135deg, #d82c20, #a11b12);
+        }
+
+        .db-badge.sqlite {
+            background: linear-gradient(135deg, #0f80cc, #0a568a);
+        }
+
+        .db-badge.dynamodb {
+            background: linear-gradient(135deg, #232f3e, #141b24);
+            border: 1px solid rgba(255, 153, 0, 0.4);
+        }
+
+        .db-badge.cassandra {
+            background: linear-gradient(135deg, #1287b1, #0c5d7a);
+        }
+
+        .db-badge.mariadb {
+            background: linear-gradient(135deg, #003545, #001f29);
+        }
+
+        .db-badge.cockroachdb {
+            background: linear-gradient(135deg, #182836, #0c1822);
+            border: 1px solid rgba(100, 220, 160, 0.4);
+        }
+
+        .db-badge.neo4j {
+            background: linear-gradient(135deg, #008cc1, #005f83);
+        }
+
+        .db-badge.clickhouse {
+            background: linear-gradient(135deg, #ffcc00, #b89300);
+            color: #000000;
+        }
+
+        .db-badge.snowflake {
+            background: linear-gradient(135deg, #29b5e8, #168ab8);
+        }
+
+        .db-badge.influxdb {
+            background: linear-gradient(135deg, #00a3e0, #0077a3);
+        }
+
+        .db-badge.couchdb {
+            background: linear-gradient(135deg, #e0002b, #a3001e);
+        }
+
+        .db-badge.firebase {
+            background: linear-gradient(135deg, #ffca28, #ffa000);
+            color: #000000;
+        }
+
+        .db-badge.elasticsearch {
+            background: linear-gradient(135deg, #2b3a4a, #131c26);
+            border: 1px solid rgba(0, 169, 224, 0.4);
+        }
+
+        .db-badge.scylladb {
+            background: linear-gradient(135deg, #00c9c7, #008785);
+        }
+
+        .db-badge.supabase {
+            background: linear-gradient(135deg, #3ecf8e, #248a5b);
+        }
+
+        .db-badge.duckdb {
+            background: linear-gradient(135deg, #fff200, #b2a900);
+            color: #000000;
+        }
+
+        .db-badge.tidb {
+            background: linear-gradient(135deg, #3d3d75, #21214a);
+        }
+
+        .db-badge.keydb {
+            background: linear-gradient(135deg, #4f46e5, #312e81);
+        }
+
+        .db-badge.timescaledb {
+            background: linear-gradient(135deg, #f15a24, #b23b10);
+        }
     </style>
 </head>
 <body>
@@ -1220,8 +1354,35 @@
 
     <div class="container">
         <header>
-            <h1><i class="fas fa-brain"></i> Pro Quiz Master</h1>
-            <p class="subtitle">Luyện tập kiến thức Java với nền tảng kiểm tra tương tác</p>
+            <h1><i class="fas fa-database"></i> DBA Arena</h1>
+            <p class="subtitle">Luyện tập kiến thức quản trị cơ sở dữ liệu chuyên nghiệp</p>
+            <div class="db-badges">
+                <span class="db-badge oracle"><i class="fas fa-database"></i> Oracle</span>
+                <span class="db-badge postgresql"><i class="fas fa-server"></i> PostgreSQL</span>
+                <span class="db-badge mongodb"><i class="fas fa-leaf"></i> MongoDB</span>
+                <span class="db-badge mysql"><i class="fas fa-database"></i> MySQL</span>
+                <span class="db-badge mssql"><i class="fas fa-server"></i> MS SQL</span>
+                <span class="db-badge redis"><i class="fas fa-cubes"></i> Redis</span>
+                <span class="db-badge sqlite"><i class="fas fa-feather-alt"></i> SQLite</span>
+                <span class="db-badge dynamodb"><i class="fas fa-network-wired"></i> DynamoDB</span>
+                <span class="db-badge cassandra"><i class="fas fa-project-diagram"></i> Cassandra</span>
+                <span class="db-badge mariadb"><i class="fas fa-database"></i> MariaDB</span>
+                <span class="db-badge cockroachdb"><i class="fas fa-bug"></i> CockroachDB</span>
+                <span class="db-badge neo4j"><i class="fas fa-project-diagram"></i> Neo4j</span>
+                <span class="db-badge clickhouse"><i class="fas fa-chart-bar"></i> ClickHouse</span>
+                <span class="db-badge snowflake"><i class="fas fa-snowflake"></i> Snowflake</span>
+                <span class="db-badge influxdb"><i class="fas fa-chart-line"></i> InfluxDB</span>
+                <span class="db-badge couchdb"><i class="fas fa-couch"></i> CouchDB</span>
+                <span class="db-badge firebase"><i class="fas fa-fire"></i> Firebase</span>
+                <span class="db-badge elasticsearch"><i class="fas fa-search"></i> Elasticsearch</span>
+                <span class="db-badge scylladb"><i class="fas fa-bolt"></i> ScyllaDB</span>
+                <span class="db-badge supabase"><i class="fas fa-bolt"></i> Supabase</span>
+                <span class="db-badge duckdb"><i class="fas fa-fish"></i> DuckDB</span>
+                <span class="db-badge tidb"><i class="fas fa-database"></i> TiDB</span>
+                <span class="db-badge keydb"><i class="fas fa-key"></i> KeyDB</span>
+                <span class="db-badge timescaledb"><i class="fas fa-clock"></i> TimescaleDB</span>
+                <span class="db-badge singlestore"><i class="fas fa-bolt"></i> SingleStore</span>
+            </div>
         </header>
 
         <div class="import-section">
@@ -1237,7 +1398,7 @@
             </div>
             
             <div class="text-input-container">
-                <textarea id="json-text" placeholder="Hoặc dán dữ liệu JSON vào đây..." style="width: 100%; min-height: 150px; padding: 15px; border-radius: 12px; border: 2px solid #e9ecef; font-family: monospace; resize: vertical;"></textarea>
+                <textarea id="json-text" placeholder="Hoặc dán dữ liệu JSON vào đây..." style="width: 100%; min-height: 150px; padding: 15px; border-radius: 12px; font-family: monospace; resize: vertical;"></textarea>
             </div>
             
             <button class="btn btn-primary" id="start-btn" disabled>
