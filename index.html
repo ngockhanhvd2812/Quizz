@@ -1221,45 +1221,45 @@
     <div class="container">
         <header>
             <h1><i class="fas fa-brain"></i> Pro Quiz Master</h1>
-            <p class="subtitle">Challenge your knowledge with our interactive quiz platform</p>
+            <p class="subtitle">Luyện tập kiến thức Java với nền tảng kiểm tra tương tác</p>
         </header>
 
         <div class="import-section">
-            <h2><i class="fas fa-file-import"></i> Import Questions</h2>
-            <p>Upload a JSON file containing your quiz questions or paste the JSON data directly</p>
+            <h2><i class="fas fa-file-import"></i> Nhập Câu Hỏi</h2>
+            <p>Tải lên file JSON chứa câu hỏi quiz hoặc dán trực tiếp dữ liệu JSON vào ô bên dưới</p>
             
             <div class="file-input-container">
                 <input type="file" id="file-input" class="file-input" accept=".json">
                 <label for="file-input" class="file-label">
-                    <i class="fas fa-upload"></i> Choose JSON File
+                    <i class="fas fa-upload"></i> Chọn File JSON
                 </label>
-                <div class="file-name" id="file-name">No file selected</div>
+                <div class="file-name" id="file-name">Chưa chọn file</div>
             </div>
             
             <div class="text-input-container">
-                <textarea id="json-text" placeholder="Or paste JSON data here..." style="width: 100%; min-height: 150px; padding: 15px; border-radius: 12px; border: 2px solid #e9ecef; font-family: monospace; resize: vertical;"></textarea>
+                <textarea id="json-text" placeholder="Hoặc dán dữ liệu JSON vào đây..." style="width: 100%; min-height: 150px; padding: 15px; border-radius: 12px; border: 2px solid #e9ecef; font-family: monospace; resize: vertical;"></textarea>
             </div>
             
             <button class="btn btn-primary" id="start-btn" disabled>
-                <i class="fas fa-play"></i> Start Quiz
+                <i class="fas fa-play"></i> Bắt Đầu
             </button>
         </div>
 
         <div class="stats-bar" id="stats-bar" style="display: none;">
             <div class="stat-card">
-                <div class="stat-title">Questions Answered</div>
+                <div class="stat-title">Câu Đã Trả Lời</div>
                 <div class="stat-value" id="answered-count">0/0</div>
             </div>
             <div class="stat-card correct">
-                <div class="stat-title">Correct</div>
+                <div class="stat-title">Đúng</div>
                 <div class="stat-value" id="correct-count">0</div>
             </div>
             <div class="stat-card incorrect">
-                <div class="stat-title">Incorrect</div>
+                <div class="stat-title">Sai</div>
                 <div class="stat-value" id="incorrect-count">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-title">Accuracy</div>
+                <div class="stat-title">Độ Chính Xác</div>
                 <div class="stat-value" id="accuracy">0%</div>
             </div>
         </div>
@@ -1283,38 +1283,38 @@
                     </button>
 
                     <div class="explanation-section" id="explanation-section">
-                        <h3 class="explanation-title">Explanation</h3>
-                        <div class="explanation-content" id="explanation-content">Explanation will appear after answering.</div>
+                        <h3 class="explanation-title">Lời Giải</h3>
+                        <div class="explanation-content" id="explanation-content">Lời giải sẽ hiện sau khi trả lời.</div>
                     </div>
                     <div class="pitfall-section" id="pitfall-section">
-                        <h3 class="pitfall-title">Common Pitfall</h3>
-                        <div class="pitfall-content" id="pitfall-content">Common pitfall information will appear after answering.</div>
+                        <h3 class="pitfall-title">Lưu Ý Thường Gặp</h3>
+                        <div class="pitfall-content" id="pitfall-content">Thông tin lưu ý sẽ hiện sau khi trả lời.</div>
                     </div>
                 </div>
                 
                 <div class="navigation-controls">
-                    <button class="btn btn-outline" id="prev-btn" disabled title="Previous Question (Left Arrow Key)">
-                        <i class="fas fa-arrow-left"></i> Previous
+                    <button class="btn btn-outline" id="prev-btn" disabled title="Câu trước (Phím mũi tên trái)">
+                        <i class="fas fa-arrow-left"></i> Trước
                     </button>
-                    <button class="btn btn-outline" id="shuffle-btn" title="Shuffle Questions (S Key)">
-                        <i class="fas fa-random"></i> Shuffle
+                    <button class="btn btn-outline" id="shuffle-btn" title="Xáo trộn câu hỏi (Phím S)">
+                        <i class="fas fa-random"></i> Xáo Trộn
                     </button>
-                    <button class="btn btn-outline" id="results-btn" style="display: none;" title="Back to Results">
-                        <i class="fas fa-chart-bar"></i> Results
+                    <button class="btn btn-outline" id="results-btn" style="display: none;" title="Xem kết quả">
+                        <i class="fas fa-chart-bar"></i> Kết Quả
                     </button>
-                    <button class="btn btn-primary" id="next-btn" title="Next Question (Right Arrow Key)">
-                        Next <i class="fas fa-arrow-right"></i>
+                    <button class="btn btn-primary" id="next-btn" title="Câu tiếp (Phím mũi tên phải)">
+                        Tiếp <i class="fas fa-arrow-right"></i>
                     </button>
-                    <button class="btn btn-primary" id="submit-btn" style="display: none;" title="Submit Quiz (Enter Key)">
-                        <i class="fas fa-check-circle"></i> Submit
+                    <button class="btn btn-primary" id="submit-btn" style="display: none;" title="Nộp bài (Phím Enter)">
+                        <i class="fas fa-check-circle"></i> Nộp Bài
                     </button>
                 </div>
             </div>
 
             <div class="sidebar">
                 <div class="summary-card">
-                    <h2 class="summary-title"><i class="fas fa-tasks"></i> Questions</h2>
-                    <p>You are working on <strong><span id="current-question">1</span>/<span id="total-question-count">0</span></strong></p>
+                    <h2 class="summary-title"><i class="fas fa-tasks"></i> Câu Hỏi</h2>
+                    <p>Bạn đang làm câu <strong><span id="current-question">1</span>/<span id="total-question-count">0</span></strong></p>
                     <div class="question-list" id="question-list">
                         <!-- Question numbers will be inserted here by JavaScript -->
                     </div>
@@ -1325,34 +1325,34 @@
         <div class="results-section" id="results-section">
             <div class="results-header">
                 <div class="results-score" id="results-score">0%</div>
-                <h2 class="results-title">Quiz Completed!</h2>
-                <p class="results-description">Review your performance to understand strengths and focus areas.</p>
+                <h2 class="results-title">Hoàn Thành Bài Kiểm Tra!</h2>
+                <p class="results-description">Xem lại kết quả để hiểu điểm mạnh và phần cần cải thiện.</p>
             </div>
 
             <div class="detailed-results">
                 <div class="result-card correct">
                     <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success-color);"></i>
                     <div class="result-value" id="results-correct">0</div>
-                    <div class="result-label">Correct Answers</div>
+                    <div class="result-label">Câu Đúng</div>
                 </div>
                 <div class="result-card incorrect">
                     <i class="fas fa-times-circle" style="font-size: 3rem; color: var(--danger-color);"></i>
                     <div class="result-value" id="results-incorrect">0</div>
-                    <div class="result-label">Incorrect Answers</div>
+                    <div class="result-label">Câu Sai</div>
                 </div>
                 <div class="result-card">
                     <i class="fas fa-percentage" style="font-size: 3rem; color: var(--primary-color);"></i>
                     <div class="result-value" id="results-accuracy">0%</div>
-                    <div class="result-label">Overall Accuracy</div>
+                    <div class="result-label">Độ Chính Xác</div>
                 </div>
             </div>
 
             <div class="action-buttons">
                 <button class="btn btn-outline" id="review-btn">
-                    <i class="fas fa-eye"></i> Review Answers
+                    <i class="fas fa-eye"></i> Xem Lại Đáp Án
                 </button>
                 <button class="btn btn-primary" id="retake-btn">
-                    <i class="fas fa-redo"></i> Retake Quiz
+                    <i class="fas fa-redo"></i> Làm Lại
                 </button>
             </div>
         </div>
@@ -1553,7 +1553,7 @@
                 try {
                     const jsonData = JSON.parse(e.target.result);
                     questions = normalizeQuestions(jsonData);
-                    showToast('Questions loaded successfully!');
+                    showToast('Tải câu hỏi thành công!');
                 } catch (error) {
                     console.error('Error parsing JSON file:', error);
                     
@@ -1562,12 +1562,12 @@
                         let fixedText = robustJsonFix(e.target.result);
                         const jsonData = JSON.parse(fixedText);
                         questions = normalizeQuestions(jsonData);
-                        elements.fileName.textContent = file.name + ' (auto-fixed)';
-                        showToast('Questions loaded with auto-fixes applied');
+                        elements.fileName.textContent = file.name + ' (tự động sửa lỗi)';
+                        showToast('Câu hỏi được tải, đã tự động sửa lỗi JSON');
                     } catch (secondError) {
                         console.error('Error after fixing JSON:', secondError);
-                        showToast('Invalid JSON file. Please check the format.', true);
-                        elements.fileName.textContent = 'Invalid file format';
+                        showToast('File JSON không hợp lệ. Vui lòng kiểm tra định dạng.', true);
+                        elements.fileName.textContent = 'Định dạng file không hợp lệ';
                         elements.startBtn.disabled = true;
                     }
                 }
@@ -1588,8 +1588,8 @@
                 const jsonData = JSON.parse(text);
                 questions = normalizeQuestions(jsonData);
                 elements.startBtn.disabled = false;
-                elements.fileName.textContent = 'JSON text input';
-                showToast('Questions loaded successfully!');
+                elements.fileName.textContent = 'Nhập JSON từ văn bản';
+                showToast('Tải câu hỏi thành công!');
             } catch (error) {
                 console.error('Error parsing JSON text:', error);
                 
@@ -1599,14 +1599,14 @@
                     const jsonData = JSON.parse(fixedText);
                     questions = normalizeQuestions(jsonData);
                     elements.startBtn.disabled = false;
-                    elements.fileName.textContent = 'JSON text input (auto-fixed)';
-                    showToast('Questions loaded with auto-fixes applied');
+                    elements.fileName.textContent = 'Nhập JSON từ văn bản (tự động sửa lỗi)';
+                    showToast('Câu hỏi được tải, đã tự động sửa lỗi JSON');
                     return;
                 } catch (secondError) {
                     console.error('Error after fixing JSON text:', secondError);
                     elements.startBtn.disabled = true;
-                    elements.fileName.textContent = 'Invalid JSON: ' + secondError.message;
-                    showToast('Invalid JSON format. Please check your data.', true);
+                    elements.fileName.textContent = 'JSON không hợp lệ: ' + secondError.message;
+                    showToast('Định dạng JSON không hợp lệ. Vui lòng kiểm tra dữ liệu.', true);
                 }
             }
         }
@@ -1865,7 +1865,7 @@
         // Start the quiz
         function startQuiz() {
             if (questions.length === 0) {
-                showToast('Please import a valid JSON file with questions first.', true);
+                showToast('Vui lòng nhập file JSON hợp lệ có câu hỏi trước.', true);
                 return;
             }
 
@@ -1887,7 +1887,7 @@
             displayQuestion(0);
             updateStats();
             
-            showToast('Quiz started! Good luck!');
+            showToast('Đã bắt đầu! Chúc may mắn!');
         }
 
         // Update total questions display
@@ -1985,8 +1985,8 @@
                 elements.pitfallSection.classList.remove('show');
                 
                 // Reset explanation content to placeholders
-                elements.explanationContent.innerHTML = 'Explanation will appear after answering.';
-                elements.pitfallContent.innerHTML = 'Common pitfall information will appear after answering.';
+                elements.explanationContent.innerHTML = 'Lời giải sẽ hiện sau khi trả lời.';
+                elements.pitfallContent.innerHTML = 'Thông tin lưu ý sẽ hiện sau khi trả lời.';
             }
 
             // Update navigation
@@ -2177,7 +2177,7 @@
             displayQuestion(0);
             updateStats();
             
-            showToast('Questions shuffled!');
+            showToast('Đã xáo trộn câu hỏi!');
         }
 
         // Update statistics
@@ -2266,9 +2266,9 @@
             // Create confetti if score is good
             if (accuracy >= 70) {
                 createConfetti();
-                showToast(`Congratulations! You scored ${accuracy}%!`);
+                showToast(`Chúc mừng! Bạn đạt ${accuracy}%!`);
             } else {
-                showToast(`Quiz completed! You scored ${accuracy}%. Keep practicing!`);
+                showToast(`Hoàn thành! Bạn đạt ${accuracy}%. Hãy luyện tập thêm!`);
             }
         }
 
@@ -2289,7 +2289,7 @@
             updateStats();
             createQuestionList();
             
-            showToast('Quiz restarted! Good luck!');
+            showToast('Đã làm lại! Chúc may mắn!');
         }
 
         // Review quiz answers after completion
