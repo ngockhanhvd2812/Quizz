@@ -1,6 +1,6 @@
 # Tutorial: Creating Quiz Questions for the Pro Quiz Master Application
 
-This tutorial explains how to create quiz questions in the correct format for the Pro Quiz Master application. The application uses a specific JSON structure and supports special formatting features including Java/SQL code blocks and markdown-like syntax.
+This tutorial explains how to create quiz questions in the correct format for the DBA Arena / Pro Quiz Master application. The application primarily focuses on SQL and Database Administration questions, but also supports Java coding questions. It uses a specific JSON structure and supports special formatting features including SQL/Java code blocks and markdown-like syntax.
 
 ## JSON Structure Overview
 
@@ -37,11 +37,11 @@ Each quiz is a JSON array containing question objects. Here's the basic structur
 
 ### Optional Properties
 
-1. **link** (string): URL to the original source page of the question. When provided, a **"Xem câu hỏi gốc"** button appears in the question header allowing users to visit the original source. The app accepts **any valid URL** — there is no domain filter in code. As a project convention, only questions from these validated sources should be used:
-   - `https://www.examveda.com/`
-   - `https://ocpjp.jobs4times.com/`
-   - `https://www.indiabix.com/java-programming`
-   - `https://www.sanfoundry.com/java-questions-answers-freshers-experienced/`
+1. **link** (string): URL to the original source page of the question. When provided, a **"Xem câu hỏi gốc"** button appears in the question header allowing users to visit the original source. The app accepts **any valid URL** — there is no domain filter in code. As a project convention, only questions from validated sources should be used, such as official database documentation or programming tutorials:
+   - `https://docs.oracle.com/` (Oracle Documentation)
+   - `https://www.postgresql.org/docs/` (PostgreSQL Documentation)
+   - `https://www.examveda.com/` (Examveda Quiz Site)
+   - `https://ocpjp.jobs4times.com/` (Java OCP Quiz Site - for Java questions)
 2. **explanation** (string): Detailed explanation of the correct answer(s). Appears when user answers correctly, or after clicking "Xem Lời Giải" if answered incorrectly
 3. **pitfall** (string): Information about common mistakes or misconceptions
 4. **difficulty** (string): Difficulty level (`"easy"`, `"medium"`, `"hard"`) — stored in memory but **not currently displayed in the UI**; defaults to `"medium"`
@@ -69,33 +69,33 @@ Supported language identifiers:
 | *(anything else)* | No | Generic code icon |
 
 ```markdown
-```java
-public class App {
-    public static void main(String[] args) {
-        System.out.println("Hello World");
-    }
-}
+```sql
+SELECT employee_id, first_name, salary 
+FROM employees 
+WHERE salary > 5000 
+ORDER BY salary DESC;
 ```
-```
+*(Note: Java is also fully supported using ` ```java ` block formatting).*
 
-Example in a question:
+Example of an SQL question:
 ```json
 {
   "id": 1,
-  "link": "https://www.examveda.com/...",
-  "question": "What is the output of this Java code snippet? ```java System.out.println(10 + 20 + \"Java\"); ```",
+  "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqpug/STARTUP.html",
+  "question": "Bạn cần khởi động Oracle 19c đến trạng thái **NOMOUNT** để restore control file. Chọn lệnh đúng để chạy trong SQL*Plus.",
   "options": [
-    "30Java",
-    "1020Java",
-    "Java30",
-    "Compilation fails"
+    "```sql\nSTARTUP NOMOUNT;\n```",
+    "```sql\nSTARTUP MOUNT;\n```",
+    "```sql\nALTER DATABASE NOMOUNT;\n```",
+    "```sql\nALTER SYSTEM NOMOUNT;\n```"
   ],
   "answer": [0],
-  "explanation": "The expression is evaluated from left to right. First, `10 + 20` is evaluated as integer addition resulting in `30`. Then, `30 + \"Java\"` performs string concatenation, resulting in `30Java`.",
-  "pitfall": "Common pitfall: assuming string concatenation happens first, which would result in `1020Java`.",
-  "difficulty": "medium"
+  "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh đưa database instance lên NOMOUNT.\n\n**Bước 1 - Giải thích ngắn gọn:** Lệnh `STARTUP NOMOUNT` khởi tạo instance, đọc parameter file (SPFILE/PFILE) và cấp phát bộ nhớ (SGA), nhưng chưa đọc control file.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Nhầm `NOMOUNT` với `MOUNT`: Trạng thái `MOUNT` yêu cầu control file đã được mở và đọc.\n- Sử dụng `ALTER DATABASE` khi database đang shutdown: Lệnh này chỉ hoạt động khi instance đã chạy.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Lệnh chuẩn để tạo instance không cần mount database.\n- **B**: Sai. Lệnh này mount database bằng cách đọc control file.\n- **C** và **D**: Sai cú pháp khởi động từ trạng thái tắt.",
+  "pitfall": "Sai lầm phổ biến: Nhầm lẫn giữa trạng thái `NOMOUNT` (chỉ khởi tạo bộ nhớ SGA/background processes) và `MOUNT` (đọc control file để liên kết database). Để khôi phục control file bị mất, ta bắt buộc phải vào `NOMOUNT`.",
+  "difficulty": "easy"
 }
 ```
+*(Note: You can write the questions in English or Vietnamese depending on your audience).*
 
 ### Bold Text Formatting
 
@@ -142,34 +142,33 @@ Use the `SELECT` statement to retrieve data
 [
   {
     "id": 1,
-    "question": "Which of this method can be used to make the main thread to be executed last among all the threads?",
-    "link": "https://www.examveda.com/which-of-this-method-can-be-used-to-make-the-main-thread-to-be-executed-last-among-all-the-threads-222232/",
+    "question": "Which shutdown mode in Oracle Database 19c rolls back active transactions, disconnects users, and shuts down the database cleanly without requiring recovery on the next startup?",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqpug/SHUTDOWN.html",
     "options": [
-      "stop()",
-      "sleep()",
-      "join()",
-      "call()"
+      "```sql\nSHUTDOWN NORMAL;\n```",
+      "```sql\nSHUTDOWN IMMEDIATE;\n```",
+      "```sql\nSHUTDOWN ABORT;\n```",
+      "```sql\nSHUTDOWN TRANSACTIONAL;\n```"
     ],
-    "answer": [2],
-    "explanation": "**LỜI GIẢI CHI TIẾT**\n\n`join()` is used to wait for a thread to finish execution before the current thread continues.",
-    "pitfall": "**LƯU Ý / PITFALL**\n\nSai lầm phổ biến: nhầm `sleep()` với `join()` vì cả hai đều làm thread hiện tại tạm dừng.",
+    "answer": [1],
+    "explanation": "**LỜI GIẢI CHI TIẾT**\n\n`SHUTDOWN IMMEDIATE` is the standard shutdown mode for DBA maintenance. It prevents new connections, terminates active sessions, rolls back uncommitted transactions, and shuts down the database cleanly.",
+    "pitfall": "**LƯU Ý / PITFALL**\n\n- Do not confuse `IMMEDIATE` with `ABORT`. `ABORT` is a dirty shutdown (equivalent to pulling the power plug) and will require instance recovery next startup.\n- Confusing `IMMEDIATE` with `NORMAL` (which waits indefinitely for users to disconnect) or `TRANSACTIONAL` (which waits for current transactions to finish).",
     "difficulty": "easy"
   },
   {
     "id": 2,
-    "question": "Which three statements are true about Java threads? (Choose three.)",
+    "question": "Which statements are true about Java threads? (Choose all correct options — Java is also supported by the app)",
     "link": "https://ocpjp.jobs4times.com/multiThread.html",
     "options": [
-      "A thread can be started more than once",
+      "```java\n// Option 1\nthread.start();\nthread.start(); // throws IllegalThreadStateException\n```",
       "Threads share the same heap memory",
-      "Each thread has its own stack",
-      "The `synchronized` keyword prevents deadlock",
-      "A thread enters the blocked state when waiting for a monitor lock"
+      "Each thread has its own private stack frame",
+      "The `synchronized` keyword prevents deadlocks automatically"
     ],
-    "answer": [1, 2, 4],
-    "explanation": "**B**, **C**, and **E** are correct. Threads share heap memory but each has its own stack. A thread enters the blocked state when waiting for a monitor lock.",
-    "pitfall": "Common pitfall: confusing blocked and waiting states, and assuming `synchronized` prevents deadlock — it does not.",
-    "difficulty": "hard"
+    "answer": [0, 1, 2],
+    "explanation": "**EXPLANATION**\n\n- Attempting to start a thread that has already started will throw `IllegalThreadStateException`.\n- Threads share the same heap memory segment but have their own stacks.\n- `synchronized` is used for mutual exclusion, it does not prevent deadlocks (it can actually cause deadlocks if locking order is incorrect).",
+    "pitfall": "Common misconception: assuming `synchronized` prevents deadlock, or that a thread can be restarted.",
+    "difficulty": "medium"
   }
 ]
 ```

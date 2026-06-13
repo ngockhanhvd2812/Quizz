@@ -1,0 +1,852 @@
+[
+  {
+    "id": 1,
+    "question": "Bạn cần khởi động Oracle 19c đến trạng thái **NOMOUNT** để restore control file hoặc tạo database. Chọn lệnh đúng để copy chạy trong SQL*Plus.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqpug/STARTUP.html",
+    "options": [
+      "```sql\nSTARTUP NOMOUNT;\n```",
+      "```sql\nSTARTUP MOUNT;\n```",
+      "```sql\nALTER DATABASE NOMOUNT;\n```",
+      "```sql\nALTER SYSTEM NOMOUNT;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh đưa instance lên NOMOUNT, tức instance đã được tạo nhưng database chưa mount control file.\n\n**Bước 1 - Giải thích ngắn gọn:** `STARTUP NOMOUNT` khởi tạo instance, đọc parameter file và cấp phát bộ nhớ, nhưng chưa đọc control file.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Đừng nhầm `NOMOUNT` với `MOUNT`: `MOUNT` đã đọc control file.\n- `ALTER DATABASE` không dùng để chuyển từ shutdown sang NOMOUNT.\n- NOMOUNT thường dùng khi cần restore control file hoặc tạo database, không phải trạng thái làm việc bình thường cho ứng dụng.\n- Nếu đề nói SQL*Plus startup stage, hãy ưu tiên lệnh `STARTUP`, không phải `ALTER SYSTEM`.\n- Cần đọc kỹ trạng thái mục tiêu: instance only, mounted database hay open database.\nĐiểm chốt: Lệnh đúng là `STARTUP NOMOUNT;` vì đây là cú pháp SQL*Plus dùng để tạo instance ở mức thấp nhất.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh chuẩn để khởi động instance ở trạng thái NOMOUNT.\n- **B**: Sai. `STARTUP MOUNT` đi xa hơn, đọc control file và mount database.\n- **C**: Sai. `ALTER DATABASE` không tạo instance từ trạng thái shutdown.\n- **D**: Sai. `ALTER SYSTEM` không có cú pháp chuyển instance sang NOMOUNT như vậy.",
+    "pitfall": "Bẫy chính là thấy chữ `mount` rồi chọn `STARTUP MOUNT`. Với restore control file, thường phải vào `NOMOUNT` trước vì control file có thể chưa tồn tại hoặc cần được phục hồi.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 2,
+    "question": "Database đang ở trạng thái NOMOUNT. Bạn muốn mount control file nhưng chưa mở datafile. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-DATABASE.html",
+    "options": [
+      "```sql\nALTER DATABASE MOUNT;\n```",
+      "```sql\nALTER DATABASE OPEN;\n```",
+      "```sql\nSTARTUP OPEN;\n```",
+      "```sql\nALTER SYSTEM MOUNT DATABASE;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh chuyển database từ NOMOUNT sang MOUNT.\n\n**Bước 1 - Giải thích ngắn gọn:** Khi database mount, Oracle đã đọc control file nhưng datafile chưa mở cho user truy cập.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Không dùng `STARTUP` nếu đề nói database đã ở NOMOUNT; lúc này cần `ALTER DATABASE`.\n- `OPEN` là bước sau MOUNT, không phải bước mount control file.\n- MOUNT thường dùng cho recovery, bật ARCHIVELOG hoặc thao tác cần control file nhưng chưa mở database.\n- Cú pháp Oracle là `ALTER DATABASE MOUNT`, không phải `ALTER SYSTEM MOUNT DATABASE`.\n- Hãy tách ba mốc: NOMOUNT tạo instance, MOUNT đọc control file, OPEN mở datafile/redo để dùng.\nĐiểm chốt: Từ NOMOUNT đi lên MOUNT bằng `ALTER DATABASE MOUNT;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Lệnh này mount database bằng control file.\n- **B**: Sai. Lệnh này mở database, yêu cầu database đã mount.\n- **C**: Sai trong ngữ cảnh này vì database đã NOMOUNT; `STARTUP OPEN` là lệnh khởi động từ đầu.\n- **D**: Sai cú pháp Oracle.",
+    "pitfall": "Khi đọc đề vận hành, phải chú ý trạng thái hiện tại. Cùng là startup nhưng từ shutdown và từ NOMOUNT sẽ dùng lệnh khác nhau.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 3,
+    "question": "Database đã ở trạng thái MOUNT sau khi recovery xong. Bạn muốn mở database cho ứng dụng kết nối bình thường. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-DATABASE.html",
+    "options": [
+      "```sql\nALTER DATABASE OPEN;\n```",
+      "```sql\nALTER DATABASE MOUNT;\n```",
+      "```sql\nSTARTUP NOMOUNT;\n```",
+      "```sql\nALTER SYSTEM OPEN DATABASE;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh mở database từ trạng thái MOUNT.\n\n**Bước 1 - Giải thích ngắn gọn:** `ALTER DATABASE OPEN` mở datafile và online redo log để database sẵn sàng phục vụ phiên làm việc.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Đừng chọn lại `MOUNT` khi database đã mount rồi.\n- `STARTUP NOMOUNT` sẽ không phù hợp vì đó là bước khởi động instance từ shutdown.\n- OPEN là trạng thái làm việc bình thường, còn MOUNT thường dành cho bảo trì/recovery.\n- Câu hỏi hỏi mở database, không hỏi mở PDB; với PDB dùng `ALTER PLUGGABLE DATABASE`.\n- Không có cú pháp chuẩn `ALTER SYSTEM OPEN DATABASE`.\nĐiểm chốt: Từ MOUNT sang OPEN dùng `ALTER DATABASE OPEN;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh mở database sau khi đã mount.\n- **B**: Sai. Database đã ở MOUNT nên lệnh này không đạt mục tiêu mở database.\n- **C**: Sai. Đây là bước thấp hơn, không dùng để mở database đã mount.\n- **D**: Sai cú pháp.",
+    "pitfall": "Bẫy hay gặp là gom tất cả thao tác startup vào một lệnh. Oracle tách rõ stage, nên phải chọn đúng lệnh theo trạng thái hiện tại.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 4,
+    "question": "Bạn cần shutdown Oracle 19c theo cách thường dùng trong bảo trì: không nhận kết nối mới, rollback transaction chưa commit và đóng database sạch. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqpug/SHUTDOWN.html",
+    "options": [
+      "```sql\nSHUTDOWN IMMEDIATE;\n```",
+      "```sql\nSHUTDOWN ABORT;\n```",
+      "```sql\nSHUTDOWN TRANSACTIONAL;\n```",
+      "```sql\nSHUTDOWN NORMAL;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn mode shutdown phù hợp cho bảo trì thông thường.\n\n**Bước 1 - Giải thích ngắn gọn:** `SHUTDOWN IMMEDIATE` là lựa chọn phổ biến vì không chờ user tự disconnect, rollback transaction đang mở và shutdown sạch.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `ABORT` nhanh nhưng không shutdown sạch; lần startup sau cần instance recovery.\n- `NORMAL` có thể chờ rất lâu vì đợi toàn bộ user disconnect.\n- `TRANSACTIONAL` chờ transaction hiện tại kết thúc, phù hợp hơn khi muốn không rollback transaction đang chạy.\n- `IMMEDIATE` không có nghĩa là mất dữ liệu commit; nó rollback phần chưa commit.\n- Đề hỏi bảo trì thông thường, không phải tình huống khẩn cấp.\nĐiểm chốt: Lệnh thường dùng là `SHUTDOWN IMMEDIATE;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là mode cân bằng giữa nhanh và sạch.\n- **B**: Sai trong bảo trì thường lệ vì `ABORT` là dừng cưỡng bức.\n- **C**: Sai vì có thể phải chờ transaction hoàn tất, không phải lựa chọn phổ biến nhất khi cần shutdown bảo trì.\n- **D**: Sai vì có thể treo lâu nếu còn session kết nối.",
+    "pitfall": "Đừng hiểu `IMMEDIATE` là cắt ngang kiểu nguy hiểm như `ABORT`. Trong Oracle, `IMMEDIATE` vẫn đóng database sạch sau khi rollback transaction chưa commit.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 5,
+    "question": "Bạn muốn kiểm tra instance hiện tại đang ở trạng thái nào, ví dụ `STARTED`, `MOUNTED` hoặc `OPEN`. Chọn câu SQL đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/Oracle-Database-Reference.html",
+    "options": [
+      "```sql\nSELECT instance_name, status FROM v$instance;\n```",
+      "```sql\nSELECT database_name, status FROM dba_database;\n```",
+      "```sql\nSHOW INSTANCE STATUS;\n```",
+      "```sql\nSELECT name, open_mode FROM v$database;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn câu truy vấn kiểm tra trạng thái instance.\n\n**Bước 1 - Giải thích ngắn gọn:** `v$instance` cho biết thông tin instance như tên instance, host, version và trạng thái instance.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Đừng nhầm instance status với database open mode; đó là hai lớp khác nhau.\n- `v$database` hữu ích để xem database name/open mode, nhưng không phải view chính cho trạng thái instance.\n- `SHOW INSTANCE STATUS` không phải lệnh SQL*Plus chuẩn.\n- `DBA_DATABASE` không phải data dictionary view phổ biến cho mục tiêu này.\n- Khi troubleshoot startup, nên kiểm tra cả `v$instance` và `v$database` tùy câu hỏi muốn hỏi instance hay database.\nĐiểm chốt: Muốn kiểm tra instance status thì truy vấn `v$instance`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. `STATUS` trong `v$instance` phản ánh trạng thái instance.\n- **B**: Sai. View này không phải cách chuẩn để xem instance status.\n- **C**: Sai. Đây không phải lệnh hợp lệ.\n- **D**: Sai cho mục tiêu instance; câu này xem database name/open mode.",
+    "pitfall": "Bẫy là thấy `OPEN_MODE` rồi tưởng đó là instance status. Instance và database là hai khái niệm sát nhau nhưng không giống nhau trong vận hành Oracle.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 6,
+    "question": "Bạn muốn kiểm tra database đang mở `READ WRITE`, `READ ONLY` hay chưa mở. Chọn câu SQL đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/Oracle-Database-Reference.html",
+    "options": [
+      "```sql\nSELECT name, open_mode FROM v$database;\n```",
+      "```sql\nSELECT instance_name, status FROM v$instance;\n```",
+      "```sql\nSELECT username, account_status FROM dba_users;\n```",
+      "```sql\nSHOW PARAMETER open_mode;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn truy vấn kiểm tra trạng thái mở của database.\n\n**Bước 1 - Giải thích ngắn gọn:** `v$database.open_mode` cho biết database đang mở theo mode nào, ví dụ `READ WRITE` hoặc `READ ONLY`.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `v$instance.status` không thay thế cho `v$database.open_mode`.\n- `account_status` là trạng thái user, không liên quan open mode.\n- `SHOW PARAMETER` chỉ xem initialization parameter, không xem trạng thái open thực tế.\n- Trong CDB/PDB, root và từng PDB có open mode riêng; câu này hỏi database-level view.\n- Khi phân tích đề, hãy tìm keyword `open mode`, không chỉ keyword `status`.\nĐiểm chốt: Câu đúng là `SELECT name, open_mode FROM v$database;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cách trực tiếp để xem open mode của database.\n- **B**: Sai. Đây là trạng thái instance, không phải open mode database.\n- **C**: Sai. Đây là thông tin tài khoản.\n- **D**: Sai. `open_mode` không phải initialization parameter để `SHOW PARAMETER`.",
+    "pitfall": "Nếu đề nói `OPEN_MODE`, gần như phải nghĩ đến `v$database` hoặc `v$pdbs`, không phải `v$instance`.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 7,
+    "question": "Bạn đang ở CDB root và muốn xem danh sách PDB cùng trạng thái mở của chúng trong SQL*Plus. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqpug/SHOW.html",
+    "options": [
+      "```sql\nSHOW PDBS;\n```",
+      "```sql\nSHOW DATABASES;\n```",
+      "```sql\nSELECT * FROM pdbs;\n```",
+      "```sql\nLIST PDB;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh SQL*Plus để liệt kê PDB trong CDB.\n\n**Bước 1 - Giải thích ngắn gọn:** `SHOW PDBS` là lệnh SQL*Plus tiện dụng để xem PDB name, container id và open mode.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `SHOW PDBS` là lệnh SQL*Plus, không phải SQL thuần; nhưng dùng rất thường trong vận hành.\n- `SHOW DATABASES` không phải lệnh SQL*Plus chuẩn của Oracle.\n- Không có view đơn giản tên `pdbs`; nếu dùng SQL thường là `v$pdbs` hoặc `dba_pdbs`.\n- `LIST PDB` không phải cú pháp Oracle để liệt kê PDB.\n- Cần phân biệt lệnh tiện ích SQL*Plus với câu SQL dictionary view.\nĐiểm chốt: Trong SQL*Plus, dùng `SHOW PDBS;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Lệnh này hiển thị danh sách PDB và trạng thái.\n- **B**: Sai. Đây không phải lệnh Oracle SQL*Plus.\n- **C**: Sai. `pdbs` không phải view chuẩn như vậy.\n- **D**: Sai. Không có cú pháp `LIST PDB` trong SQL*Plus.",
+    "pitfall": "Bẫy là áp thói quen từ hệ quản trị khác như MySQL `SHOW DATABASES`. Trong Oracle multitenant, câu cửa miệng ở SQL*Plus là `SHOW PDBS`.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 8,
+    "question": "Sau khi mở CDB, các PDB vẫn đang ở trạng thái MOUNTED. Bạn muốn mở toàn bộ PDB ở chế độ read write. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-PLUGGABLE-DATABASE.html",
+    "options": [
+      "```sql\nALTER PLUGGABLE DATABASE ALL OPEN;\n```",
+      "```sql\nALTER DATABASE OPEN ALL PDBS;\n```",
+      "```sql\nSTARTUP PLUGGABLE DATABASE ALL;\n```",
+      "```sql\nALTER SESSION OPEN ALL PDBS;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh mở tất cả PDB trong CDB.\n\n**Bước 1 - Giải thích ngắn gọn:** `ALTER PLUGGABLE DATABASE ALL OPEN` mở toàn bộ PDB trong CDB, thường dùng sau khi CDB startup.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Mở CDB không có nghĩa mọi PDB tự động mở nếu chưa save state hoặc cấu hình phù hợp.\n- Cú pháp thao tác PDB dùng `ALTER PLUGGABLE DATABASE`, không phải `ALTER DATABASE OPEN ALL PDBS`.\n- `STARTUP` không phải lệnh mở hàng loạt PDB theo cách này.\n- `ALTER SESSION` chỉ đổi thuộc tính session hoặc container, không mở PDB.\n- Nếu chỉ mở một PDB, thay `ALL` bằng tên PDB cụ thể.\nĐiểm chốt: Muốn mở toàn bộ PDB, dùng `ALTER PLUGGABLE DATABASE ALL OPEN;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cú pháp chuẩn để mở tất cả PDB.\n- **B**: Sai. Sai cú pháp.\n- **C**: Sai. Không có lệnh SQL*Plus như vậy.\n- **D**: Sai. `ALTER SESSION` không mở PDB.",
+    "pitfall": "Đừng nghĩ CDB `OPEN` đồng nghĩa PDB cũng `OPEN`. Trong multitenant, từng PDB có vòng đời mở/đóng riêng.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 9,
+    "question": "Bạn đã mở PDB `SALES_PDB` và muốn lần sau CDB restart thì PDB này tự mở lại theo trạng thái đã lưu. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-PLUGGABLE-DATABASE.html",
+    "options": [
+      "```sql\nALTER PLUGGABLE DATABASE SALES_PDB SAVE STATE;\n```",
+      "```sql\nALTER DATABASE SALES_PDB SAVE OPEN_MODE;\n```",
+      "```sql\nALTER PLUGGABLE DATABASE SALES_PDB AUTOOPEN ON;\n```",
+      "```sql\nSAVE STATE PLUGGABLE DATABASE SALES_PDB;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh lưu trạng thái mở của một PDB.\n\n**Bước 1 - Giải thích ngắn gọn:** `SAVE STATE` ghi nhớ trạng thái hiện tại của PDB để khi CDB khởi động lại, PDB có thể trở về trạng thái đó.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `SAVE STATE` không mở PDB ngay nếu PDB đang đóng; thường mở PDB trước rồi mới save state.\n- Cú pháp nằm trong `ALTER PLUGGABLE DATABASE`, không phải `ALTER DATABASE`.\n- Không có clause `AUTOOPEN ON` chuẩn cho mục tiêu này.\n- Tên PDB phải đúng và bạn cần kết nối ở ngữ cảnh có quyền phù hợp.\n- Đề hỏi lưu trạng thái, không hỏi tạo trigger mở PDB sau startup.\nĐiểm chốt: Lệnh đúng là `ALTER PLUGGABLE DATABASE SALES_PDB SAVE STATE;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cú pháp dùng để lưu trạng thái PDB.\n- **B**: Sai. Sai cú pháp và sai đối tượng lệnh.\n- **C**: Sai. Không phải cú pháp Oracle chuẩn.\n- **D**: Sai. Thứ tự và cấu trúc câu lệnh không đúng.",
+    "pitfall": "Bẫy là cố tìm một tham số `auto open`. Với 19c, thao tác vận hành thường dùng `SAVE STATE` cho PDB.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 10,
+    "question": "Bạn đang kết nối vào CDB root và muốn chuyển session sang PDB `HRPDB` để chạy lệnh quản trị bên trong PDB đó. Chọn câu SQL đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-SESSION.html",
+    "options": [
+      "```sql\nALTER SESSION SET CONTAINER = HRPDB;\n```",
+      "```sql\nALTER SYSTEM SET CONTAINER = HRPDB;\n```",
+      "```sql\nCONNECT CONTAINER HRPDB;\n```",
+      "```sql\nUSE HRPDB;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh chuyển container của session hiện tại.\n\n**Bước 1 - Giải thích ngắn gọn:** Trong multitenant, `ALTER SESSION SET CONTAINER` chuyển session sang PDB hoặc root nếu user/quyền cho phép.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Đây là thao tác ở cấp session, không phải thay đổi toàn hệ thống.\n- `USE database` là thói quen từ hệ quản trị khác, không phải Oracle.\n- Chuyển container không tự cấp quyền; user phải tồn tại/được phép ở container tương ứng.\n- Sau khi chuyển, nhiều view và DDL sẽ áp dụng trong PDB hiện tại.\n- Đừng nhầm container với schema; schema là user sở hữu object, container là root/PDB.\nĐiểm chốt: Câu đúng là `ALTER SESSION SET CONTAINER = HRPDB;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cách chuyển session sang PDB.\n- **B**: Sai. Container là ngữ cảnh session, không phải tham số hệ thống kiểu này.\n- **C**: Sai. Không phải cú pháp SQL chuẩn.\n- **D**: Sai. Oracle không dùng `USE` để đổi database/PDB.",
+    "pitfall": "Bẫy lớn nhất là mang cú pháp MySQL/SQL Server sang Oracle. Với PDB, hãy nhớ `ALTER SESSION SET CONTAINER`.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 11,
+    "question": "Bạn đang ở trong PDB `HRPDB` và muốn tạo local user cho ứng dụng. Chọn lệnh đúng nhất.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-USER.html",
+    "options": [
+      "```sql\nCREATE USER app_user IDENTIFIED BY \"Str0ngPwd#2026\" DEFAULT TABLESPACE users TEMPORARY TABLESPACE temp;\n```",
+      "```sql\nCREATE COMMON USER app_user IDENTIFIED BY \"Str0ngPwd#2026\";\n```",
+      "```sql\nCREATE USER C##APP_USER IDENTIFIED BY \"Str0ngPwd#2026\" CONTAINER=ALL;\n```",
+      "```sql\nALTER SESSION CREATE USER app_user IDENTIFIED BY \"Str0ngPwd#2026\";\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh tạo local user trong PDB.\n\n**Bước 1 - Giải thích ngắn gọn:** Local user được tạo trong PDB hiện tại bằng `CREATE USER`; tên không cần tiền tố `C##`.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Nếu đang ở PDB, câu hỏi thường hướng tới local user, không phải common user.\n- Common user thường được tạo ở CDB root và mặc định cần tiền tố `C##` nếu dùng cấu hình chuẩn.\n- `CREATE COMMON USER` không phải cú pháp Oracle chuẩn; Oracle phân biệt bằng container và tên user.\n- Chỉ tạo user chưa đủ đăng nhập; thường còn cần `GRANT CREATE SESSION`.\n- Đừng lẫn `DEFAULT TABLESPACE` với quyền quota; cần quota nếu user tạo object.\nĐiểm chốt: Lệnh A tạo local user hợp lệ trong PDB hiện tại.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh tạo local user rõ ràng trong PDB.\n- **B**: Sai. Không có cú pháp `CREATE COMMON USER` như vậy.\n- **C**: Sai cho local user trong PDB; đây hướng đến common user trong root.\n- **D**: Sai. `ALTER SESSION` không dùng để tạo user.",
+    "pitfall": "Bẫy là cứ thấy multitenant thì chọn `C##`. Local user trong PDB không cần `C##`; quan trọng là bạn đang đứng ở container nào.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 12,
+    "question": "Bạn đang kết nối vào CDB root và muốn tạo common user dùng được trên toàn CDB theo quy tắc đặt tên mặc định của Oracle. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-USER.html",
+    "options": [
+      "```sql\nCREATE USER C##OPS IDENTIFIED BY \"Str0ngPwd#2026\" CONTAINER = ALL;\n```",
+      "```sql\nCREATE USER OPS IDENTIFIED BY \"Str0ngPwd#2026\" CONTAINER = ALL;\n```",
+      "```sql\nCREATE LOCAL USER C##OPS IDENTIFIED BY \"Str0ngPwd#2026\";\n```",
+      "```sql\nALTER SESSION SET COMMON_USER = C##OPS;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh tạo common user trong CDB root.\n\n**Bước 1 - Giải thích ngắn gọn:** Common user thường được tạo trong root, có tên bắt đầu bằng `C##` khi dùng prefix mặc định, và có thể dùng `CONTAINER=ALL`.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Common user khác local user: phạm vi của nó trải qua nhiều container.\n- Mặc định, tên common user cần prefix `C##`; bỏ prefix có thể lỗi nếu không đổi common_user_prefix.\n- Phải đang ở root để tạo common user đúng nghĩa.\n- Tạo user không đồng nghĩa có quyền đăng nhập vào mọi PDB; cần grant phù hợp.\n- `CREATE LOCAL USER` không phải cú pháp Oracle.\nĐiểm chốt: Câu đúng là `CREATE USER C##OPS ... CONTAINER = ALL;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Tên có `C##` và phạm vi `CONTAINER=ALL`.\n- **B**: Sai trong cấu hình mặc định vì tên common user thiếu prefix `C##`.\n- **C**: Sai. Không có cú pháp `CREATE LOCAL USER`.\n- **D**: Sai. `ALTER SESSION` không tạo common user.",
+    "pitfall": "Đừng học thuộc `CREATE USER` một cách phẳng. Trong 19c multitenant, cùng một câu lệnh nhưng ý nghĩa thay đổi mạnh theo container hiện tại.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 13,
+    "question": "User `APP_USER` đã được tạo nhưng chưa đăng nhập được. Bạn muốn cấp quyền đăng nhập cơ bản trong PDB hiện tại. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/GRANT.html",
+    "options": [
+      "```sql\nGRANT CREATE SESSION TO app_user;\n```",
+      "```sql\nGRANT CONNECT DATABASE TO app_user;\n```",
+      "```sql\nALTER USER app_user ENABLE LOGIN;\n```",
+      "```sql\nGRANT LOGIN TO app_user;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn quyền tối thiểu để user có thể tạo session đăng nhập.\n\n**Bước 1 - Giải thích ngắn gọn:** Trong Oracle, quyền hệ thống `CREATE SESSION` cho phép user kết nối vào database/PDB.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Tạo user không tự động cấp quyền đăng nhập.\n- Role `CONNECT` trong các hệ cũ không nên được hiểu là lệnh `CONNECT DATABASE`.\n- Không có lệnh `ENABLE LOGIN` như SQL Server.\n- Cấp `CREATE SESSION` đúng container là điều quan trọng trong CDB/PDB.\n- Quyền đăng nhập khác quyền tạo bảng, tạo view hoặc thao tác dữ liệu.\nĐiểm chốt: Muốn đăng nhập, cấp `CREATE SESSION`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là quyền cơ bản để tạo phiên kết nối.\n- **B**: Sai. Không phải cú pháp Oracle.\n- **C**: Sai. Oracle không bật đăng nhập bằng cú pháp này.\n- **D**: Sai. `LOGIN` không phải privilege Oracle như vậy.",
+    "pitfall": "Bẫy là nghĩ tạo user xong là login được. Trong Oracle, user cần privilege `CREATE SESSION`.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 14,
+    "question": "Bạn muốn tạo tablespace `APP_TS` dùng datafile 2GB và cho phép tự tăng thêm 100MB. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLESPACE.html",
+    "options": [
+      "```sql\nCREATE TABLESPACE app_ts DATAFILE '/u01/oradata/ORCL/app_ts01.dbf' SIZE 2G AUTOEXTEND ON NEXT 100M MAXSIZE 10G;\n```",
+      "```sql\nCREATE TABLE app_ts DATAFILE '/u01/oradata/ORCL/app_ts01.dbf' SIZE 2G AUTOEXTEND ON;\n```",
+      "```sql\nALTER TABLESPACE app_ts CREATE DATAFILE '/u01/oradata/ORCL/app_ts01.dbf' SIZE 2G;\n```",
+      "```sql\nCREATE TABLESPACE app_ts TEMPFILE '/u01/oradata/ORCL/app_ts01.dbf' SIZE 2G;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh tạo permanent tablespace có datafile và autoextend.\n\n**Bước 1 - Giải thích ngắn gọn:** Permanent tablespace dùng `DATAFILE`; `AUTOEXTEND ON NEXT ... MAXSIZE ...` điều khiển tăng tự động.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Đừng nhầm `CREATE TABLESPACE` với `CREATE TABLE`.\n- Permanent tablespace dùng `DATAFILE`, còn temporary tablespace dùng `TEMPFILE`.\n- `AUTOEXTEND ON` nên đi cùng `NEXT` và `MAXSIZE` để kiểm soát tăng trưởng.\n- `ALTER TABLESPACE ... CREATE DATAFILE` không phải cú pháp tạo tablespace mới.\n- Đường dẫn datafile phải phù hợp môi trường thật; trong quiz chỉ cần cú pháp đúng.\nĐiểm chốt: Lệnh A tạo tablespace đúng loại và có autoextend hợp lệ.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Cú pháp đầy đủ cho permanent tablespace.\n- **B**: Sai. `CREATE TABLE` là tạo bảng, không tạo tablespace.\n- **C**: Sai. Sai cú pháp và sai ngữ cảnh tạo mới.\n- **D**: Sai. `TEMPFILE` dành cho temporary tablespace.",
+    "pitfall": "Bẫy thường nằm ở `DATAFILE` và `TEMPFILE`. Nhìn tên tablespace thôi chưa đủ; phải biết tablespace đó permanent hay temporary.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 15,
+    "question": "Tablespace `APP_TS` gần đầy. Bạn muốn thêm datafile mới 5GB vào tablespace này. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-TABLESPACE.html",
+    "options": [
+      "```sql\nALTER TABLESPACE app_ts ADD DATAFILE '/u01/oradata/ORCL/app_ts02.dbf' SIZE 5G AUTOEXTEND ON NEXT 200M MAXSIZE 20G;\n```",
+      "```sql\nCREATE DATAFILE app_ts '/u01/oradata/ORCL/app_ts02.dbf' SIZE 5G;\n```",
+      "```sql\nALTER DATABASE ADD TABLESPACE app_ts DATAFILE '/u01/oradata/ORCL/app_ts02.dbf' SIZE 5G;\n```",
+      "```sql\nALTER TABLE app_ts ADD DATAFILE '/u01/oradata/ORCL/app_ts02.dbf' SIZE 5G;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh mở rộng tablespace bằng datafile mới.\n\n**Bước 1 - Giải thích ngắn gọn:** `ALTER TABLESPACE ... ADD DATAFILE` thêm datafile vào permanent tablespace đã tồn tại.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Thêm dung lượng tablespace không phải `CREATE DATAFILE` độc lập.\n- Đối tượng cần alter là tablespace, không phải table.\n- `ALTER DATABASE ADD TABLESPACE` không phải cú pháp chuẩn cho mục tiêu này.\n- Nếu tablespace dùng ASM/OMF, cú pháp đường dẫn có thể khác, nhưng logic vẫn là add datafile.\n- Nên kiểm soát `MAXSIZE` để tránh autoextend lấp đầy filesystem.\nĐiểm chốt: Lệnh A là cú pháp đúng để thêm datafile vào tablespace.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Thêm datafile mới vào `APP_TS`.\n- **B**: Sai. Không có cú pháp `CREATE DATAFILE` độc lập như vậy.\n- **C**: Sai. Sai cấu trúc câu lệnh.\n- **D**: Sai. `ALTER TABLE` áp dụng cho bảng, không phải tablespace.",
+    "pitfall": "Đừng nhầm tablespace với table chỉ vì tên gần giống. Dung lượng lưu trữ thuộc tablespace/datafile, không xử lý bằng `ALTER TABLE`.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 16,
+    "question": "Bạn cần đưa tablespace `REPORT_TS` sang trạng thái chỉ đọc để phục vụ lưu trữ báo cáo cũ. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-TABLESPACE.html",
+    "options": [
+      "```sql\nALTER TABLESPACE report_ts READ ONLY;\n```",
+      "```sql\nALTER DATABASE report_ts READ ONLY;\n```",
+      "```sql\nALTER TABLESPACE report_ts OFFLINE READ ONLY;\n```",
+      "```sql\nALTER USER report_ts READ ONLY;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh chuyển một tablespace sang read only.\n\n**Bước 1 - Giải thích ngắn gọn:** `ALTER TABLESPACE ... READ ONLY` làm tablespace không cho ghi thêm dữ liệu, phù hợp dữ liệu tĩnh/lưu trữ.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Read only tablespace không giống offline tablespace; offline là không truy cập được bình thường.\n- Câu lệnh tác động lên tablespace, không phải user.\n- `ALTER DATABASE READ ONLY` là khái niệm khác, áp dụng database open mode.\n- Trước khi chuyển read only cần đảm bảo không còn transaction ghi vào tablespace.\n- Đừng gắn `READ ONLY` sau `OFFLINE` nếu mục tiêu là vẫn đọc được dữ liệu.\nĐiểm chốt: Câu đúng là `ALTER TABLESPACE report_ts READ ONLY;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cú pháp chuẩn cho read-only tablespace.\n- **B**: Sai. Sai đối tượng và cú pháp.\n- **C**: Sai. Offline làm tablespace không sẵn sàng để đọc bình thường.\n- **D**: Sai. User không có trạng thái read only theo cách này.",
+    "pitfall": "Bẫy là nghĩ “không cho ghi” tương đương “offline”. Read only vẫn cho đọc; offline thì khác hẳn về vận hành.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 17,
+    "question": "Bạn muốn resize datafile hiện có của tablespace lên 8GB. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-DATABASE.html",
+    "options": [
+      "```sql\nALTER DATABASE DATAFILE '/u01/oradata/ORCL/app_ts01.dbf' RESIZE 8G;\n```",
+      "```sql\nALTER TABLESPACE app_ts DATAFILE '/u01/oradata/ORCL/app_ts01.dbf' RESIZE 8G;\n```",
+      "```sql\nRESIZE DATAFILE '/u01/oradata/ORCL/app_ts01.dbf' TO 8G;\n```",
+      "```sql\nALTER DATAFILE '/u01/oradata/ORCL/app_ts01.dbf' SIZE 8G;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh thay đổi kích thước datafile hiện có.\n\n**Bước 1 - Giải thích ngắn gọn:** Resize datafile dùng `ALTER DATABASE DATAFILE ... RESIZE ...`.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Resize một datafile khác với thêm datafile mới.\n- Đối tượng cú pháp là `ALTER DATABASE DATAFILE`, không phải `ALTER TABLESPACE ... DATAFILE`.\n- Khi resize nhỏ xuống cần cẩn thận high water mark; không phải lúc nào cũng shrink được.\n- Đường dẫn file phải khớp datafile thực tế trong `DBA_DATA_FILES`.\n- Đề hỏi datafile hiện có, nên không dùng `ADD DATAFILE`.\nĐiểm chốt: Lệnh A là cú pháp đúng để resize datafile.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh chuẩn.\n- **B**: Sai. Sai cú pháp cho resize datafile.\n- **C**: Sai. Không có lệnh độc lập `RESIZE DATAFILE` như vậy.\n- **D**: Sai. Không phải cú pháp Oracle chuẩn.",
+    "pitfall": "Bẫy thường là dùng `ALTER TABLESPACE` cho mọi thao tác storage. Thêm datafile dùng `ALTER TABLESPACE`, nhưng resize file hiện có dùng `ALTER DATABASE DATAFILE`.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 18,
+    "question": "Bạn muốn tạo temporary tablespace `TEMP_APP` dùng tempfile 10GB. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-TABLESPACE.html",
+    "options": [
+      "```sql\nCREATE TEMPORARY TABLESPACE temp_app TEMPFILE '/u01/oradata/ORCL/temp_app01.dbf' SIZE 10G AUTOEXTEND ON NEXT 500M MAXSIZE 30G;\n```",
+      "```sql\nCREATE TABLESPACE temp_app DATAFILE '/u01/oradata/ORCL/temp_app01.dbf' SIZE 10G TEMPORARY;\n```",
+      "```sql\nCREATE TEMP TABLESPACE temp_app DATAFILE '/u01/oradata/ORCL/temp_app01.dbf' SIZE 10G;\n```",
+      "```sql\nALTER DATABASE CREATE TEMPFILE temp_app SIZE 10G;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh tạo temporary tablespace đúng cú pháp.\n\n**Bước 1 - Giải thích ngắn gọn:** Temporary tablespace được tạo bằng `CREATE TEMPORARY TABLESPACE` và sử dụng `TEMPFILE`.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Temporary tablespace không dùng `DATAFILE` như permanent tablespace.\n- `TEMP` không phải từ thay thế đầy đủ cho `TEMPORARY` trong cú pháp này.\n- Tempfile phục vụ sort/hash/temp segments, không lưu dữ liệu permanent của user.\n- Cần phân biệt tạo temporary tablespace với đặt default temporary tablespace.\n- Tên file có thể là `.dbf`, nhưng bản chất vẫn là tempfile nếu khai báo `TEMPFILE`.\nĐiểm chốt: Lệnh A đúng vì dùng cả `TEMPORARY TABLESPACE` và `TEMPFILE`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cú pháp chuẩn.\n- **B**: Sai. Trộn `DATAFILE` với temporary không đúng cách.\n- **C**: Sai. Sai keyword và dùng `DATAFILE`.\n- **D**: Sai. Không phải cú pháp tạo temporary tablespace.",
+    "pitfall": "Bẫy nằm ở cặp từ khóa: permanent dùng `DATAFILE`, temporary dùng `TEMPFILE`.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 19,
+    "question": "Sau khi tạo `TEMP_APP`, bạn muốn đặt nó làm default temporary tablespace của database/PDB hiện tại. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-DATABASE.html",
+    "options": [
+      "```sql\nALTER DATABASE DEFAULT TEMPORARY TABLESPACE temp_app;\n```",
+      "```sql\nALTER TABLESPACE temp_app DEFAULT TEMPORARY;\n```",
+      "```sql\nALTER USER ALL TEMPORARY TABLESPACE temp_app;\n```",
+      "```sql\nALTER SYSTEM SET default_temp_tablespace = temp_app;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh đặt default temporary tablespace.\n\n**Bước 1 - Giải thích ngắn gọn:** `ALTER DATABASE DEFAULT TEMPORARY TABLESPACE` đặt temporary tablespace mặc định cho user mới hoặc user chưa chỉ định riêng.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Tạo temporary tablespace không tự động biến nó thành default.\n- Default temporary tablespace là thuộc tính database/PDB, không phải thuộc tính của chính tablespace.\n- `ALTER USER` chỉ áp dụng cho user cụ thể, không phải `ALL` theo cú pháp này.\n- Không có initialization parameter `default_temp_tablespace` chuẩn để set như vậy.\n- Trong multitenant, phải chú ý đang ở root hay PDB khi đặt default.\nĐiểm chốt: Câu đúng là `ALTER DATABASE DEFAULT TEMPORARY TABLESPACE temp_app;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cú pháp đặt default temporary tablespace.\n- **B**: Sai. Sai hướng câu lệnh.\n- **C**: Sai. Không phải cú pháp hợp lệ.\n- **D**: Sai. Không phải parameter chuẩn.",
+    "pitfall": "Đừng nhầm “tạo ra” với “đặt làm mặc định”. Tạo xong `TEMP_APP` chưa chắc user nào cũng dùng nó.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 20,
+    "question": "Bạn muốn đổi undo tablespace hiện tại sang `UNDOTBS2` bằng tham số động. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-SYSTEM.html",
+    "options": [
+      "```sql\nALTER SYSTEM SET undo_tablespace = UNDOTBS2;\n```",
+      "```sql\nALTER DATABASE SET UNDO TABLESPACE UNDOTBS2;\n```",
+      "```sql\nALTER TABLESPACE UNDOTBS2 SET UNDO;\n```",
+      "```sql\nUSE UNDO TABLESPACE UNDOTBS2;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh chuyển active undo tablespace.\n\n**Bước 1 - Giải thích ngắn gọn:** `UNDO_TABLESPACE` là initialization parameter có thể đặt bằng `ALTER SYSTEM SET` trong môi trường phù hợp.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Undo tablespace khác temporary tablespace; đừng áp cú pháp default temp sang undo.\n- Tham số là `undo_tablespace`, không phải câu lệnh `USE`.\n- Phải đảm bảo `UNDOTBS2` tồn tại và là undo tablespace.\n- Trong RAC có thể cần xét undo riêng từng instance tùy cấu hình.\n- Đổi undo ảnh hưởng vận hành transaction, nên không chỉ là thao tác storage đơn giản.\nĐiểm chốt: Lệnh đúng là `ALTER SYSTEM SET undo_tablespace = UNDOTBS2;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cách đặt tham số undo tablespace.\n- **B**: Sai. Không phải cú pháp Oracle chuẩn.\n- **C**: Sai. Không chuyển active undo bằng `ALTER TABLESPACE` như vậy.\n- **D**: Sai. Oracle không dùng `USE`.",
+    "pitfall": "Bẫy là nghĩ mọi thứ liên quan tablespace đều dùng `ALTER TABLESPACE`. Với undo đang active, DBA thường làm qua parameter `undo_tablespace`.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 21,
+    "question": "Bạn muốn xem dung lượng datafile và trạng thái autoextend của các tablespace. Chọn truy vấn đúng nhất.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/Oracle-Database-Reference.html",
+    "options": [
+      "```sql\nSELECT tablespace_name, file_name, bytes, autoextensible, maxbytes FROM dba_data_files;\n```",
+      "```sql\nSELECT tablespace, filename, size FROM v$tablespace_usage;\n```",
+      "```sql\nSHOW TABLESPACE SIZE;\n```",
+      "```sql\nSELECT * FROM dba_tables WHERE tablespace_name IS NOT NULL;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn truy vấn xem thông tin datafile của permanent tablespace.\n\n**Bước 1 - Giải thích ngắn gọn:** `DBA_DATA_FILES` chứa thông tin datafile như tablespace, file name, bytes, autoextensible và maxbytes.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Dung lượng datafile không nằm trong `DBA_TABLES`; view đó nói về table object.\n- Không có lệnh `SHOW TABLESPACE SIZE` chuẩn trong SQL*Plus.\n- Tên cột Oracle cần chính xác: `TABLESPACE_NAME`, `FILE_NAME`, `BYTES`, `AUTOEXTENSIBLE`.\n- Muốn xem free space thì có thể kết hợp thêm `DBA_FREE_SPACE`; nhưng câu hỏi hỏi datafile/autoextend.\n- Temporary file nằm ở `DBA_TEMP_FILES`, không phải `DBA_DATA_FILES`.\nĐiểm chốt: Truy vấn đúng nhất là đọc từ `DBA_DATA_FILES`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là view phù hợp cho datafile và autoextend.\n- **B**: Sai. Tên view/cột không chuẩn cho mục tiêu này.\n- **C**: Sai. Không có lệnh SQL*Plus như vậy.\n- **D**: Sai. Đây là metadata của bảng, không phải datafile.",
+    "pitfall": "Bẫy là xem bảng trong tablespace rồi suy ra dung lượng tablespace. Vận hành storage nên bắt đầu từ datafile/tempfile view.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 22,
+    "question": "Bạn muốn thêm một redo log group mới gồm một member 1GB. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-DATABASE.html",
+    "options": [
+      "```sql\nALTER DATABASE ADD LOGFILE GROUP 4 ('/u01/oradata/ORCL/redo04.log') SIZE 1G;\n```",
+      "```sql\nCREATE REDO LOG GROUP 4 '/u01/oradata/ORCL/redo04.log' SIZE 1G;\n```",
+      "```sql\nALTER SYSTEM ADD LOGFILE '/u01/oradata/ORCL/redo04.log' SIZE 1G;\n```",
+      "```sql\nALTER DATABASE ADD ARCHIVELOG GROUP 4 SIZE 1G;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh thêm online redo log group.\n\n**Bước 1 - Giải thích ngắn gọn:** Online redo log group được thêm bằng `ALTER DATABASE ADD LOGFILE GROUP ... SIZE ...`.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Redo log group khác archived log; đừng dùng `ARCHIVELOG` trong lệnh thêm online redo.\n- Đối tượng thao tác là database, không phải system parameter.\n- Có thể có nhiều member trong một group để multiplex, nhưng câu hỏi chỉ cần một member.\n- Kích thước redo nên đồng nhất giữa các group trong thực tế.\n- Đừng nhầm `ADD LOGFILE` với `SWITCH LOGFILE`; một cái thêm cấu trúc, một cái đổi group hiện tại.\nĐiểm chốt: Lệnh A là cú pháp chuẩn để thêm redo log group.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Thêm group 4 với member và size cụ thể.\n- **B**: Sai. Không có `CREATE REDO LOG GROUP` như vậy.\n- **C**: Sai. `ALTER SYSTEM` không thêm redo log group.\n- **D**: Sai. Archived log không phải online redo log group.",
+    "pitfall": "Bẫy là lẫn redo online và archive log. Archive log là bản lưu của redo đã switch, không phải group online đang ghi.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 23,
+    "question": "Bạn cần ép Oracle chuyển sang redo log group kế tiếp để test archive log generation. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-SYSTEM.html",
+    "options": [
+      "```sql\nALTER SYSTEM SWITCH LOGFILE;\n```",
+      "```sql\nALTER DATABASE ADD LOGFILE;\n```",
+      "```sql\nALTER SYSTEM ARCHIVE LOG STOP;\n```",
+      "```sql\nALTER DATABASE OPEN RESETLOGS;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh switch logfile.\n\n**Bước 1 - Giải thích ngắn gọn:** `ALTER SYSTEM SWITCH LOGFILE` yêu cầu LGWR chuyển sang online redo log group kế tiếp.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Switch logfile khác archive log current; cả hai liên quan redo nhưng mục tiêu không giống nhau.\n- `ADD LOGFILE` thêm group mới, không ép chuyển group đang ghi.\n- `OPEN RESETLOGS` là thao tác recovery/open database đặc biệt, không dùng để test archive thường ngày.\n- Trong ARCHIVELOG mode, switch thường dẫn đến archived redo log được tạo.\n- Cần tránh switch liên tục quá mức trên hệ production nếu không có lý do.\nĐiểm chốt: Lệnh trực tiếp nhất là `ALTER SYSTEM SWITCH LOGFILE;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh switch online redo log.\n- **B**: Sai. Đây là thêm logfile, không switch.\n- **C**: Không phải đáp án mục tiêu trực tiếp; lệnh này dừng archiving thủ công trong tình huống rất khác.\n- **D**: Sai và nguy hiểm nếu dùng sai ngữ cảnh recovery.",
+    "pitfall": "Bẫy là thấy chữ archive và chọn một lệnh archive khác. Câu hỏi hỏi switch group, nên nhớ `SWITCH LOGFILE`.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 24,
+    "question": "Bạn muốn xem database đang ở ARCHIVELOG hay NOARCHIVELOG bằng SQL*Plus. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqpug/SHOW.html",
+    "options": [
+      "```sql\nARCHIVE LOG LIST;\n```",
+      "```sql\nSHOW ARCHIVELOG MODE;\n```",
+      "```sql\nSELECT archivelog FROM v$instance;\n```",
+      "```sql\nLIST ARCHIVELOG MODE;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh SQL*Plus kiểm tra archive log mode.\n\n**Bước 1 - Giải thích ngắn gọn:** `ARCHIVE LOG LIST` hiển thị trạng thái archive log, automatic archival và log sequence.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Đây là lệnh SQL*Plus, không phải câu SQL SELECT.\n- Không có cột `archivelog` trong `v$instance` theo cách option C mô tả.\n- Có thể dùng `SELECT log_mode FROM v$database`, nhưng option đó không xuất hiện ở đây.\n- `SHOW ARCHIVELOG MODE` nghe hợp lý nhưng không phải lệnh chuẩn.\n- Cần phân biệt kiểm tra mode với bật mode; bật mode cần database MOUNT.\nĐiểm chốt: Lệnh đúng là `ARCHIVE LOG LIST;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh SQL*Plus quen thuộc để kiểm tra archive mode.\n- **B**: Sai. Không phải lệnh chuẩn.\n- **C**: Sai. Sai view/cột.\n- **D**: Sai. Không phải cú pháp Oracle.",
+    "pitfall": "Bẫy là chọn câu nghe tự nhiên. Oracle có nhiều lệnh lịch sử trong SQL*Plus, và `ARCHIVE LOG LIST` là một ví dụ cần nhớ đúng chữ.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 25,
+    "question": "Database đang shutdown và bạn muốn bật ARCHIVELOG mode. Chọn chuỗi lệnh đúng nhất.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-DATABASE.html",
+    "options": [
+      "```sql\nSTARTUP MOUNT;\nALTER DATABASE ARCHIVELOG;\nALTER DATABASE OPEN;\n```",
+      "```sql\nSTARTUP OPEN;\nALTER DATABASE ARCHIVELOG;\n```",
+      "```sql\nSTARTUP NOMOUNT;\nALTER DATABASE ARCHIVELOG;\nALTER DATABASE OPEN;\n```",
+      "```sql\nALTER SYSTEM SET archivelog = true;\nSHUTDOWN IMMEDIATE;\nSTARTUP;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn trình tự đúng để bật ARCHIVELOG mode.\n\n**Bước 1 - Giải thích ngắn gọn:** Để đổi ARCHIVELOG/NOARCHIVELOG, database thường phải ở trạng thái MOUNT, chưa OPEN.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Không bật ARCHIVELOG khi database đã mở read write bình thường.\n- NOMOUNT chưa đọc control file nên không phù hợp để đổi log mode.\n- `archivelog` không phải parameter bật bằng `ALTER SYSTEM SET archivelog=true`.\n- Sau khi đổi mode, cần mở database lại.\n- Trước khi production dùng ARCHIVELOG, nên chuẩn bị FRA/archive destination và chính sách backup archived log.\nĐiểm chốt: Trình tự đúng: startup mount, alter database archivelog, rồi open.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là chuỗi lệnh chuẩn.\n- **B**: Sai. Database mở rồi mới đổi ARCHIVELOG là không đúng ngữ cảnh.\n- **C**: Sai. NOMOUNT chưa đủ để đổi log mode.\n- **D**: Sai. Không bật ARCHIVELOG bằng parameter như vậy.",
+    "pitfall": "Bẫy là nghĩ ARCHIVELOG là tham số bật/tắt. Thực tế đây là database log mode, đổi bằng `ALTER DATABASE` khi database ở MOUNT.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 26,
+    "question": "Bạn muốn cấu hình Fast Recovery Area ở `/u02/fra` với giới hạn 200GB. Chọn cặp lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-SYSTEM.html",
+    "options": [
+      "```sql\nALTER SYSTEM SET db_recovery_file_dest_size = 200G SCOPE=BOTH;\nALTER SYSTEM SET db_recovery_file_dest = '/u02/fra' SCOPE=BOTH;\n```",
+      "```sql\nALTER DATABASE SET fra = '/u02/fra' SIZE 200G;\n```",
+      "```sql\nCREATE RECOVERY AREA '/u02/fra' SIZE 200G;\n```",
+      "```sql\nALTER SYSTEM SET archive_dest = '/u02/fra' SIZE=200G;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh cấu hình FRA bằng initialization parameters.\n\n**Bước 1 - Giải thích ngắn gọn:** FRA dùng hai parameter chính: `DB_RECOVERY_FILE_DEST_SIZE` và `DB_RECOVERY_FILE_DEST`.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Nên đặt size trước destination để tránh lỗi khi destination được set mà size chưa có.\n- FRA không được tạo bằng lệnh `CREATE RECOVERY AREA`.\n- `archive_dest` không phải tên parameter FRA chuẩn.\n- FRA có thể chứa archived logs, flashback logs, backups tùy cấu hình.\n- Cần giám sát FRA đầy vì có thể gây lỗi archive và ảnh hưởng database.\nĐiểm chốt: Cặp lệnh A đặt đúng size và location của FRA.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cách cấu hình FRA bằng `ALTER SYSTEM SET`.\n- **B**: Sai. Không phải cú pháp Oracle chuẩn.\n- **C**: Sai. Không có câu lệnh tạo FRA như vậy.\n- **D**: Sai. Sai tên parameter và cú pháp.",
+    "pitfall": "Bẫy là chỉ set đường dẫn mà quên size. FRA bắt buộc gắn với giới hạn dung lượng rõ ràng.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 27,
+    "question": "Bạn muốn kiểm tra listener Oracle đang chạy và đang lắng nghe service nào. Chọn lệnh đúng để copy chạy trên server.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/netag/oracle-net-listener-configuration.html",
+    "options": [
+      "```sql\nlsnrctl status\n```",
+      "```sql\nsqlplus status listener\n```",
+      "```sql\nlistener status;\n```",
+      "```sql\nsrvctl show listener_status\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh kiểm tra trạng thái listener bằng Listener Control utility.\n\n**Bước 1 - Giải thích ngắn gọn:** `lsnrctl status` hiển thị listener endpoint, service registered và trạng thái listener.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Listener là thành phần Oracle Net, không kiểm tra bằng câu SQL thông thường.\n- `sqlplus` dùng để kết nối database, không phải công cụ điều khiển listener.\n- `listener status;` nghe giống SQL nhưng không phải cú pháp hợp lệ.\n- Trong RAC có thể dùng thêm `srvctl`, nhưng option D không phải cú pháp chuẩn ở đây.\n- Nếu service chưa hiện, có thể cần kiểm tra dynamic registration hoặc chạy `ALTER SYSTEM REGISTER`.\nĐiểm chốt: Lệnh đúng là `lsnrctl status`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh Listener Control phổ biến.\n- **B**: Sai. SQL*Plus không dùng như vậy.\n- **C**: Sai. Không phải SQL hợp lệ.\n- **D**: Sai. Không phải cú pháp SRVCTL chuẩn cho tình huống này.",
+    "pitfall": "Bẫy là cố biến mọi thứ thành SQL. Listener thuộc tầng network; kiểm tra bằng `lsnrctl`, còn database registration mới dùng SQL.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 28,
+    "question": "Sau khi đổi service hoặc listener vừa restart, bạn muốn yêu cầu instance đăng ký lại service với listener ngay. Chọn lệnh SQL đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-SYSTEM.html",
+    "options": [
+      "```sql\nALTER SYSTEM REGISTER;\n```",
+      "```sql\nALTER LISTENER REGISTER DATABASE;\n```",
+      "```sql\nlsnrctl register\n```",
+      "```sql\nALTER DATABASE REGISTER LISTENER;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh ép dynamic service registration.\n\n**Bước 1 - Giải thích ngắn gọn:** `ALTER SYSTEM REGISTER` yêu cầu PMON/LREG đăng ký lại thông tin service với listener.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Đây là lệnh SQL chạy trong database, không phải lệnh `lsnrctl`.\n- Không có cú pháp `ALTER LISTENER` trong SQL Database như option B.\n- Listener không tự biết service nếu database chưa đăng ký hoặc cấu hình static chưa có.\n- Lệnh này không sửa sai `LOCAL_LISTENER`; nếu tham số sai, vẫn phải chỉnh tham số.\n- Đề hỏi đăng ký lại ngay, không hỏi khởi động lại listener.\nĐiểm chốt: Câu đúng là `ALTER SYSTEM REGISTER;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh ép đăng ký service.\n- **B**: Sai. Không có cú pháp này.\n- **C**: Sai. `lsnrctl register` không phải lệnh chuẩn.\n- **D**: Sai. Sai cú pháp.",
+    "pitfall": "Khi service không hiện trong `lsnrctl status`, đừng vội restart database. Hãy nghĩ đến `ALTER SYSTEM REGISTER` và kiểm tra `LOCAL_LISTENER` trước.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 29,
+    "question": "Bạn muốn xem các service database đang biết ở bên trong instance. Chọn truy vấn đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/Oracle-Database-Reference.html",
+    "options": [
+      "```sql\nSELECT name, network_name FROM v$services ORDER BY name;\n```",
+      "```sql\nSELECT service_name FROM dba_listeners;\n```",
+      "```sql\nSHOW SERVICES FROM LISTENER;\n```",
+      "```sql\nSELECT listener, service FROM v$listener_services;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn truy vấn xem service từ phía database.\n\n**Bước 1 - Giải thích ngắn gọn:** `v$services` hiển thị thông tin service mà database biết, bao gồm name/network name.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `lsnrctl status` xem từ phía listener; `v$services` xem từ phía database.\n- Không có view chuẩn `DBA_LISTENERS` cho câu hỏi này.\n- `SHOW SERVICES FROM LISTENER` không phải lệnh SQL*Plus chuẩn.\n- Service database khác SID; khi cấu hình ứng dụng nên dùng service name.\n- Trong CDB/PDB, PDB có thể có service riêng, nên cần xem đúng container/ngữ cảnh.\nĐiểm chốt: Truy vấn đúng là đọc từ `v$services`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là view động phù hợp.\n- **B**: Sai. Không phải view chuẩn.\n- **C**: Sai. Không phải lệnh hợp lệ.\n- **D**: Sai. Không phải view chuẩn như vậy.",
+    "pitfall": "Bẫy là chỉ nhìn listener mà quên phía database. Nếu database chưa tạo/đăng ký service đúng, listener cũng không thể hiển thị đúng như mong muốn.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 30,
+    "question": "Bạn có file pfile `/tmp/initORCL.ora` và muốn tạo spfile mặc định từ pfile đó. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqpug/STARTUP.html",
+    "options": [
+      "```sql\nCREATE SPFILE FROM PFILE = '/tmp/initORCL.ora';\n```",
+      "```sql\nALTER SYSTEM CREATE SPFILE FROM '/tmp/initORCL.ora';\n```",
+      "```sql\nCREATE PFILE FROM SPFILE = '/tmp/initORCL.ora';\n```",
+      "```sql\nSTARTUP SPFILE='/tmp/initORCL.ora';\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh tạo server parameter file từ text pfile.\n\n**Bước 1 - Giải thích ngắn gọn:** `CREATE SPFILE FROM PFILE` tạo binary server parameter file từ pfile văn bản.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- SPFILE và PFILE ngược chiều nhau; đọc kỹ câu hỏi muốn tạo cái nào từ cái nào.\n- `CREATE PFILE FROM SPFILE` là chiều ngược lại, dùng để xuất pfile từ spfile.\n- `STARTUP SPFILE=...` không phải cách tạo spfile.\n- SPFILE thường nằm ở vị trí mặc định hoặc ASM tùy môi trường.\n- Sau khi tạo spfile, lần startup tiếp theo có thể dùng spfile nếu đặt đúng vị trí/tên.\nĐiểm chốt: Lệnh đúng là `CREATE SPFILE FROM PFILE = ...`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cú pháp tạo spfile từ pfile.\n- **B**: Sai. Không dùng `ALTER SYSTEM CREATE SPFILE`.\n- **C**: Sai. Đây là chiều ngược lại.\n- **D**: Sai. `STARTUP` không tạo spfile.",
+    "pitfall": "Bẫy là đảo chiều PFILE/SPFILE. Hãy đọc câu như một mũi tên: tạo SPFILE từ PFILE thì câu lệnh cũng phải theo đúng chiều đó.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 31,
+    "question": "Bạn muốn đổi tham số `processes` nhưng biết rằng tham số này cần hiệu lực sau lần restart tiếp theo. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-SYSTEM.html",
+    "options": [
+      "```sql\nALTER SYSTEM SET processes = 800 SCOPE = SPFILE;\n```",
+      "```sql\nALTER SYSTEM SET processes = 800 SCOPE = MEMORY;\n```",
+      "```sql\nALTER DATABASE SET processes = 800;\n```",
+      "```sql\nALTER SESSION SET processes = 800;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn cách đặt static parameter vào spfile để có hiệu lực sau restart.\n\n**Bước 1 - Giải thích ngắn gọn:** Với tham số không đổi động được trong memory, DBA đặt `SCOPE=SPFILE` rồi restart database.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `SCOPE=MEMORY` chỉ phù hợp tham số dynamic có thể đổi ngay.\n- `processes` thường cần restart nên không nên chọn memory.\n- Tham số instance đặt bằng `ALTER SYSTEM`, không phải `ALTER DATABASE`.\n- `ALTER SESSION` chỉ ảnh hưởng session và không dùng cho tham số instance như `processes`.\n- Nếu database đang dùng pfile thay vì spfile, `SCOPE=SPFILE` có thể không dùng được như mong muốn.\nĐiểm chốt: Lệnh đúng là `ALTER SYSTEM SET processes = 800 SCOPE = SPFILE;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Ghi vào spfile để áp dụng sau restart.\n- **B**: Sai. Không phù hợp với tham số cần restart.\n- **C**: Sai. Sai loại lệnh.\n- **D**: Sai. Không phải tham số session.",
+    "pitfall": "Bẫy là thấy `ALTER SYSTEM SET` rồi bỏ qua `SCOPE`. Trong vận hành Oracle, `MEMORY`, `SPFILE`, `BOTH` quyết định thời điểm hiệu lực.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 32,
+    "question": "Tài khoản `APP_USER` đang bị khóa và cần mở khóa kèm đặt mật khẩu mới. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-USER.html",
+    "options": [
+      "```sql\nALTER USER app_user IDENTIFIED BY \"N3wPwd#2026\" ACCOUNT UNLOCK;\n```",
+      "```sql\nUNLOCK USER app_user IDENTIFIED BY \"N3wPwd#2026\";\n```",
+      "```sql\nALTER ACCOUNT app_user UNLOCK PASSWORD \"N3wPwd#2026\";\n```",
+      "```sql\nGRANT UNLOCK TO app_user IDENTIFIED BY \"N3wPwd#2026\";\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh mở khóa user và đổi mật khẩu.\n\n**Bước 1 - Giải thích ngắn gọn:** `ALTER USER ... IDENTIFIED BY ... ACCOUNT UNLOCK` vừa đặt password mới vừa mở khóa account.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Mở khóa user là DDL trên user, không phải grant privilege.\n- Không có lệnh độc lập `UNLOCK USER` trong Oracle.\n- Mật khẩu có ký tự đặc biệt nên đặt trong double quotes nếu muốn giữ đúng chuỗi.\n- Cần chạy trong đúng container nếu user là local user của PDB.\n- Mở khóa không tự cấp quyền đăng nhập nếu user chưa có `CREATE SESSION`.\nĐiểm chốt: Lệnh A là cú pháp đúng.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cách phổ biến để đổi mật khẩu và mở khóa.\n- **B**: Sai. Không phải cú pháp Oracle.\n- **C**: Sai. Không có `ALTER ACCOUNT` như vậy.\n- **D**: Sai. Unlock không phải privilege để grant.",
+    "pitfall": "Bẫy là xử lý account như hệ quản trị khác. Trong Oracle, phần lớn thao tác tài khoản đi qua `ALTER USER`.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 33,
+    "question": "Bạn muốn tạo profile giới hạn mật khẩu hết hạn sau 90 ngày và khóa account 1 ngày sau 5 lần đăng nhập sai. Chọn lệnh đúng nhất.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-PROFILE.html",
+    "options": [
+      "```sql\nCREATE PROFILE app_profile LIMIT PASSWORD_LIFE_TIME 90 FAILED_LOGIN_ATTEMPTS 5 PASSWORD_LOCK_TIME 1;\n```",
+      "```sql\nCREATE USER PROFILE app_profile PASSWORD EXPIRE 90 FAILED 5 LOCK 1;\n```",
+      "```sql\nALTER SYSTEM SET password_life_time = 90 failed_login_attempts = 5;\n```",
+      "```sql\nCREATE PROFILE app_profile AS PASSWORD_LIFE_TIME 90, FAILED_LOGIN_ATTEMPTS 5;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh tạo password profile.\n\n**Bước 1 - Giải thích ngắn gọn:** Oracle dùng `CREATE PROFILE ... LIMIT` để đặt các giới hạn như password life time, failed login attempts và lock time.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Profile là object riêng, không phải tham số hệ thống.\n- Tạo profile chưa áp dụng cho user; cần `ALTER USER ... PROFILE app_profile` nếu muốn gán.\n- `PASSWORD_LOCK_TIME 1` tính theo ngày, nên 1 là một ngày.\n- Cú pháp dùng danh sách resource liên tiếp, không dùng dấu phẩy như option D.\n- Các chính sách mật khẩu còn phụ thuộc verify function nếu muốn kiểm soát độ mạnh password.\nĐiểm chốt: Lệnh A đúng cấu trúc `CREATE PROFILE ... LIMIT ...`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cú pháp profile hợp lệ.\n- **B**: Sai. Trộn cú pháp user và profile.\n- **C**: Sai. Đây không phải tham số hệ thống đặt kiểu đó.\n- **D**: Sai. Sai keyword và dấu phẩy không đúng mẫu.",
+    "pitfall": "Bẫy là tạo profile rồi tưởng user tự dùng. Profile chỉ có hiệu lực với user được gán profile đó.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 34,
+    "question": "Bạn muốn cấp cho user `REPORT_USER` quyền đọc các view catalog phục vụ báo cáo giám sát, nhưng không cấp DBA toàn quyền. Chọn lệnh phù hợp nhất.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/GRANT.html",
+    "options": [
+      "```sql\nGRANT SELECT_CATALOG_ROLE TO report_user;\n```",
+      "```sql\nGRANT DBA TO report_user;\n```",
+      "```sql\nGRANT ALL PRIVILEGES TO report_user;\n```",
+      "```sql\nGRANT SELECT ANY DICTIONARY TO PUBLIC;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn cách cấp quyền catalog tương đối phù hợp, tránh cấp quá rộng.\n\n**Bước 1 - Giải thích ngắn gọn:** `SELECT_CATALOG_ROLE` thường dùng để cho phép đọc nhiều data dictionary view mà không cấp vai trò DBA toàn quyền.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `DBA` là role rất mạnh, không nên cấp chỉ để đọc báo cáo.\n- `ALL PRIVILEGES` quá rộng và không đúng tinh thần least privilege.\n- Cấp `SELECT ANY DICTIONARY` cho `PUBLIC` là cực kỳ nguy hiểm.\n- Cần cân nhắc chính sách bảo mật và chỉ cấp view cần thiết nếu môi trường nhạy cảm.\n- Role và system privilege khác nhau; option đúng nhất theo đề là role catalog.\nĐiểm chốt: Trong các lựa chọn, `SELECT_CATALOG_ROLE` là phù hợp nhất.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đủ gần mục tiêu đọc catalog mà không cấp DBA.\n- **B**: Sai. Quá rộng cho nhu cầu báo cáo.\n- **C**: Sai. Quá rộng và không theo least privilege.\n- **D**: Sai. Cấp cho PUBLIC là rủi ro bảo mật lớn.",
+    "pitfall": "Bẫy là chọn quyền mạnh nhất để chắc chạy được. Vận hành tốt là cấp đủ dùng, không cấp thừa.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 35,
+    "question": "Bạn muốn bật traditional auditing để ghi nhận các lần logon/logoff thành công và thất bại. Chọn câu lệnh phù hợp nhất.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/AUDIT-Traditional-Auditing.html",
+    "options": [
+      "```sql\nAUDIT SESSION;\n```",
+      "```sql\nAUDIT LOGON LOGOFF;\n```",
+      "```sql\nALTER SYSTEM AUDIT SESSION = TRUE;\n```",
+      "```sql\nCREATE AUDIT POLICY session; ENABLE AUDIT;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh traditional audit cho session.\n\n**Bước 1 - Giải thích ngắn gọn:** `AUDIT SESSION` là lệnh traditional auditing để audit kết nối session.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Oracle có traditional auditing và unified auditing; đề hỏi traditional auditing.\n- `AUDIT LOGON LOGOFF` nghe tự nhiên nhưng không phải cú pháp đúng ở đây.\n- Audit không bật bằng `ALTER SYSTEM AUDIT SESSION = TRUE`.\n- Unified audit policy có cú pháp khác, không phải option D như viết.\n- Sau khi bật audit cần biết audit trail đang ghi ở đâu và cách xem kết quả.\nĐiểm chốt: Lệnh đúng là `AUDIT SESSION;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh traditional audit cho session.\n- **B**: Sai. Không phải cú pháp chuẩn.\n- **C**: Sai. Không bật audit bằng parameter kiểu đó.\n- **D**: Sai. Không đúng cú pháp unified auditing hoàn chỉnh.",
+    "pitfall": "Bẫy là lấy ý nghĩa tiếng Anh ghép thành lệnh. Oracle audit có cú pháp riêng, cần nhớ đúng đối tượng audit như `SESSION`.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 36,
+    "question": "Bạn muốn tạo role `app_read_role`, cấp quyền đọc bảng `HR.EMPLOYEES`, rồi gán role cho user `APP_USER`. Chọn nhóm lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-ROLE.html",
+    "options": [
+      "```sql\nCREATE ROLE app_read_role;\nGRANT SELECT ON hr.employees TO app_read_role;\nGRANT app_read_role TO app_user;\n```",
+      "```sql\nCREATE USER app_read_role;\nGRANT SELECT ON hr.employees TO app_user;\n```",
+      "```sql\nGRANT ROLE app_read_role TO app_user;\nGRANT SELECT hr.employees TO app_read_role;\n```",
+      "```sql\nCREATE PRIVILEGE app_read_role;\nASSIGN app_read_role TO app_user;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn chuỗi lệnh tạo role, cấp object privilege cho role và gán role cho user.\n\n**Bước 1 - Giải thích ngắn gọn:** Role là nhóm quyền. DBA tạo role, grant quyền vào role, rồi grant role cho user.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Role không phải user; không dùng `CREATE USER` để tạo role.\n- Object privilege cần cú pháp `GRANT SELECT ON schema.table TO grantee`.\n- Gán role cũng dùng `GRANT role TO user`, không phải `ASSIGN`.\n- Role giúp quản lý quyền theo nhóm, nhưng trong stored procedure definer rights role có thể không áp dụng như session thường.\n- Cần phân biệt grant quyền cho role và grant role cho user.\nĐiểm chốt: Chuỗi A đúng đầy đủ cả ba bước.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là quy trình chuẩn.\n- **B**: Sai. Tạo user thay vì role và thiếu grant role.\n- **C**: Sai. Sai cú pháp grant role và object privilege.\n- **D**: Sai. Không có `CREATE PRIVILEGE`/`ASSIGN` như vậy.",
+    "pitfall": "Bẫy là nhầm role với user hoặc privilege. Role là vật chứa quyền, không phải tài khoản đăng nhập.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 37,
+    "question": "Bạn muốn vào RMAN kết nối target database cục bộ bằng OS authentication. Chọn lệnh đúng để copy chạy ở shell/RMAN context.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/BACKUP.html",
+    "options": [
+      "```sql\nrman target /\n```",
+      "```sql\nsqlplus target / as sysdba\n```",
+      "```sql\nrman connect sysdba\n```",
+      "```sql\nconnect rman target /\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh vào RMAN và kết nối target database bằng OS authentication.\n\n**Bước 1 - Giải thích ngắn gọn:** `rman target /` mở RMAN và kết nối target bằng xác thực hệ điều hành, tương tự cách DBA thường dùng trên server DB.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- RMAN là công cụ backup/recovery riêng, không phải SQL*Plus.\n- `target /` là cú pháp RMAN quen thuộc để kết nối database mục tiêu.\n- OS authentication yêu cầu user OS thuộc nhóm phù hợp như dba/oper tùy môi trường.\n- Nếu kết nối qua network, cú pháp có thể là `rman target user/password@service`.\n- Đừng nhầm user schema `RMAN` với công cụ RMAN.\nĐiểm chốt: Lệnh đúng là `rman target /`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cách vào RMAN target local.\n- **B**: Sai. Đây là SQL*Plus, không phải RMAN.\n- **C**: Sai. Không phải cú pháp kết nối RMAN chuẩn.\n- **D**: Sai. Sai thứ tự/cú pháp.",
+    "pitfall": "Bẫy là nghĩ backup chỉ là SQL. RMAN có prompt và cú pháp riêng, nhưng vẫn nên đặt trong code block để người học copy được.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 38,
+    "question": "Bạn muốn chạy một backup online đầy đủ kèm archived logs bằng RMAN. Chọn lệnh đúng nhất.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/BACKUP.html",
+    "options": [
+      "```sql\nBACKUP DATABASE PLUS ARCHIVELOG;\n```",
+      "```sql\nBACKUP FULL DATABASE WITH REDOLOG;\n```",
+      "```sql\nBACKUP ARCHIVELOG AND DATAFILES ALL;\n```",
+      "```sql\nEXPORT DATABASE FULL WITH ARCHIVELOG;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh RMAN backup database kèm archive log.\n\n**Bước 1 - Giải thích ngắn gọn:** `BACKUP DATABASE PLUS ARCHIVELOG` backup database và archived redo logs cần cho recovery.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- RMAN không dùng keyword `FULL DATABASE WITH REDOLOG` như option B.\n- Archived log khác online redo log; RMAN backup archived logs, không backup online redo đang active theo cách đơn giản đó.\n- `EXPORT` là Data Pump/logical export, không thay thế RMAN physical backup.\n- Trong production nên thêm format, tag, channel, retention và kiểm tra backup thành công.\n- Backup kèm archivelog giúp tăng khả năng recover đến thời điểm gần hơn.\nĐiểm chốt: Lệnh đúng là `BACKUP DATABASE PLUS ARCHIVELOG;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cú pháp RMAN chuẩn và rất phổ biến.\n- **B**: Sai. Không phải cú pháp RMAN.\n- **C**: Sai. Sai cấu trúc câu lệnh.\n- **D**: Sai. Export không phải RMAN backup.",
+    "pitfall": "Bẫy là đồng nhất export với backup. Export có ích cho dữ liệu logic, nhưng không thay thế RMAN trong phục hồi database.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 39,
+    "question": "Bạn muốn xem tóm tắt các backup RMAN hiện có. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/LIST.html",
+    "options": [
+      "```sql\nLIST BACKUP SUMMARY;\n```",
+      "```sql\nSHOW BACKUP SUMMARY;\n```",
+      "```sql\nSELECT * FROM rman_backup_summary;\n```",
+      "```sql\nREPORT BACKUP ALL;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh RMAN liệt kê backup dạng summary.\n\n**Bước 1 - Giải thích ngắn gọn:** `LIST BACKUP SUMMARY` cho cái nhìn nhanh về backup sets, pieces và trạng thái cơ bản.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `SHOW` trong RMAN thường dùng cho cấu hình, không phải liệt kê backup summary theo option B.\n- RMAN repository không truy vấn bằng view tự chế `rman_backup_summary` như vậy.\n- `REPORT` có các mục đích như schema/need backup/obsolete, không phải cú pháp option D.\n- Sau `LIST`, DBA vẫn nên kiểm tra file vật lý hoặc catalog nếu nghi ngờ mất file.\n- Phân biệt `LIST BACKUP` với `RESTORE VALIDATE`: một cái xem metadata, một cái kiểm tra khả năng đọc backup.\nĐiểm chốt: Lệnh đúng là `LIST BACKUP SUMMARY;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh RMAN để xem summary backup.\n- **B**: Sai. Không phải cú pháp đúng.\n- **C**: Sai. Không có view chuẩn như vậy.\n- **D**: Sai. Không phải lệnh RMAN đúng cho mục tiêu này.",
+    "pitfall": "Bẫy là nghĩ có backup trong metadata nghĩa là restore được. `LIST` chỉ là bước đầu; kiểm chứng nên dùng thêm validate/restore test.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 40,
+    "question": "Bạn muốn kiểm tra khả năng đọc các datafile và phát hiện block corruption mà không tạo backup mới. Chọn lệnh RMAN đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/VALIDATE.html",
+    "options": [
+      "```sql\nVALIDATE DATABASE;\n```",
+      "```sql\nVALIDATE BACKUP DATABASE;\n```",
+      "```sql\nCHECK DATABASE CORRUPTION;\n```",
+      "```sql\nANALYZE DATABASE VALIDATE STRUCTURE;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh RMAN validate database không tạo backup set.\n\n**Bước 1 - Giải thích ngắn gọn:** `VALIDATE DATABASE` yêu cầu RMAN kiểm tra database files để phát hiện vấn đề đọc/corruption mà không tạo backup output.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `VALIDATE BACKUP DATABASE` đảo sai ý/cú pháp so với lệnh RMAN cần dùng trong tình huống này.\n- Không có lệnh RMAN `CHECK DATABASE CORRUPTION` như option C.\n- `ANALYZE ... VALIDATE STRUCTURE` là hướng khác cho object, không phải validate toàn database bằng RMAN.\n- Validate không thay thế restore test đầy đủ.\n- Kết quả corruption có thể xem qua RMAN output và các view liên quan như `V$DATABASE_BLOCK_CORRUPTION`.\nĐiểm chốt: Lệnh trực tiếp nhất là `VALIDATE DATABASE;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh RMAN validate toàn database.\n- **B**: Sai. Cú pháp/ý lệnh không đúng cho validate toàn database theo yêu cầu.\n- **C**: Sai. Không phải cú pháp RMAN.\n- **D**: Sai. Không phải RMAN validate database.",
+    "pitfall": "Bẫy là nghĩ chỉ backup mới kiểm tra được corruption. RMAN có validate để kiểm tra khả năng đọc mà không sinh backup piece mới.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 41,
+    "question": "Bạn muốn cấu hình chính sách giữ backup đủ để recover trong 7 ngày. Chọn lệnh RMAN đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/CONFIGURE.html",
+    "options": [
+      "```sql\nCONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 7 DAYS;\n```",
+      "```sql\nCONFIGURE BACKUP KEEP 7 DAYS;\n```",
+      "```sql\nSET RETENTION = 7 DAYS;\n```",
+      "```sql\nCONFIGURE RECOVERY WINDOW = 7;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh RMAN retention policy theo recovery window.\n\n**Bước 1 - Giải thích ngắn gọn:** Recovery window 7 ngày nghĩa là RMAN cố giữ backup cần thiết để phục hồi database đến bất kỳ thời điểm nào trong 7 ngày gần nhất.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Retention policy không giống `KEEP` cho một backup riêng lẻ.\n- `CONFIGURE` là lệnh lưu cấu hình RMAN, không phải `SET RETENTION`.\n- Recovery window khác redundancy; redundancy giữ số bản backup, window giữ theo thời gian phục hồi.\n- Sau khi cấu hình, `REPORT OBSOLETE`/`DELETE OBSOLETE` mới xử lý backup cũ theo policy.\n- Cần đảm bảo archived logs cũng được backup/giữ phù hợp với recovery window.\nĐiểm chốt: Lệnh đúng là `CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 7 DAYS;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cú pháp RMAN retention theo ngày.\n- **B**: Sai. Không phải cấu hình retention policy tổng thể.\n- **C**: Sai. Không phải cú pháp RMAN chuẩn.\n- **D**: Sai. Sai cấu trúc câu lệnh.",
+    "pitfall": "Bẫy là nhầm recovery window với số lượng backup. 7 ngày không có nghĩa giữ đúng 7 backup; nó nói về khả năng recover theo thời gian.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 42,
+    "question": "Bạn nghi ngờ một số backup piece đã bị xóa ngoài RMAN. Chọn cặp lệnh đúng để đồng bộ metadata và xóa metadata expired.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/CROSSCHECK.html",
+    "options": [
+      "```sql\nCROSSCHECK BACKUP;\nDELETE EXPIRED BACKUP;\n```",
+      "```sql\nVALIDATE BACKUP;\nDELETE OBSOLETE BACKUP;\n```",
+      "```sql\nSYNC BACKUP CATALOG;\nPURGE MISSING BACKUP;\n```",
+      "```sql\nREPORT EXPIRED;\nDELETE LOST BACKUP;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh RMAN xử lý backup bị mất khỏi disk nhưng metadata vẫn còn.\n\n**Bước 1 - Giải thích ngắn gọn:** `CROSSCHECK BACKUP` kiểm tra backup có còn tồn tại không; backup không tìm thấy được đánh dấu expired, rồi `DELETE EXPIRED BACKUP` xóa metadata đó.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `EXPIRED` khác `OBSOLETE`: expired là không tìm thấy file, obsolete là không còn cần theo retention policy.\n- `DELETE OBSOLETE` không phải để xóa metadata file đã mất khỏi filesystem.\n- Không có lệnh `PURGE MISSING BACKUP` chuẩn trong RMAN.\n- Crosscheck không xóa file vật lý; nó cập nhật trạng thái trong repository.\n- Nếu backup nằm trên tape/media manager, crosscheck còn phụ thuộc media manager.\nĐiểm chốt: Cặp lệnh đúng là crosscheck rồi delete expired.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là quy trình chuẩn.\n- **B**: Sai. Lẫn validate và obsolete với expired.\n- **C**: Sai. Không phải cú pháp RMAN.\n- **D**: Sai. Không có các lệnh như vậy.",
+    "pitfall": "Bẫy rất phổ biến: dùng `DELETE OBSOLETE` cho file bị xóa thủ công. Hãy nhớ `missing file` đi với `EXPIRED`, còn `hết cần theo policy` đi với `OBSOLETE`.",
+    "difficulty": "hard"
+  },
+  {
+    "id": 43,
+    "question": "Bạn cần restore và recover datafile số 7 bằng RMAN sau khi datafile bị mất, database vẫn còn các file khác. Chọn chuỗi lệnh đúng nhất.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/RESTORE.html",
+    "options": [
+      "```sql\nSQL 'ALTER DATABASE DATAFILE 7 OFFLINE';\nRESTORE DATAFILE 7;\nRECOVER DATAFILE 7;\nSQL 'ALTER DATABASE DATAFILE 7 ONLINE';\n```",
+      "```sql\nRESTORE DATABASE;\nOPEN RESETLOGS;\n```",
+      "```sql\nRECOVER TABLESPACE 7;\nALTER DATABASE OPEN;\n```",
+      "```sql\nFLASHBACK DATAFILE 7;\nALTER DATAFILE 7 ONLINE;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn quy trình RMAN phục hồi một datafile cụ thể.\n\n**Bước 1 - Giải thích ngắn gọn:** Thông thường cần offline datafile bị lỗi, restore datafile từ backup, recover bằng redo/archivelog, rồi online lại datafile.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Restore database toàn bộ là quá rộng nếu chỉ mất một datafile và tình huống cho phép phục hồi file riêng.\n- `RECOVER DATAFILE` cần sau `RESTORE` để áp redo tới trạng thái nhất quán.\n- `OPEN RESETLOGS` không phải bước mặc định cho phục hồi datafile online kiểu này.\n- RMAN có thể chạy SQL qua `SQL '...'` để offline/online datafile.\n- Quy trình thật còn phụ thuộc tablespace, trạng thái database, archivelog mode và loại lỗi.\nĐiểm chốt: Chuỗi A thể hiện đúng flow restore/recover datafile.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là quy trình hợp lý cho datafile cụ thể.\n- **B**: Sai. Quá rộng và thêm `OPEN RESETLOGS` không đúng tình huống.\n- **C**: Sai. `RECOVER TABLESPACE 7` không đúng vì 7 là datafile number, không phải tablespace name.\n- **D**: Sai. Không phải cú pháp RMAN chuẩn cho tình huống này.",
+    "pitfall": "Bẫy là chỉ `RESTORE` mà quên `RECOVER`. Restore lấy file từ backup; recover mới áp redo để file bắt kịp database.",
+    "difficulty": "hard"
+  },
+  {
+    "id": 44,
+    "question": "Bạn muốn xóa các backup đã obsolete theo retention policy hiện tại của RMAN. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/rcmrf/DELETE.html",
+    "options": [
+      "```sql\nDELETE OBSOLETE;\n```",
+      "```sql\nDELETE EXPIRED BACKUP;\n```",
+      "```sql\nDELETE OLD BACKUP KEEP POLICY;\n```",
+      "```sql\nPURGE BACKUP BEFORE RETENTION;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh dọn backup không còn cần theo retention policy.\n\n**Bước 1 - Giải thích ngắn gọn:** `DELETE OBSOLETE` xóa các backup được RMAN xác định là không còn cần theo retention policy.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `OBSOLETE` khác `EXPIRED`; đừng dùng sai loại xóa.\n- Trước khi xóa thật, có thể dùng `REPORT OBSOLETE` để xem trước.\n- Retention policy phải được cấu hình rõ để RMAN quyết định obsolete.\n- Xóa backup cần phối hợp với yêu cầu audit/compliance của tổ chức.\n- Không có lệnh `PURGE BACKUP BEFORE RETENTION` chuẩn.\nĐiểm chốt: Lệnh đúng là `DELETE OBSOLETE;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh dọn backup obsolete.\n- **B**: Sai nếu mục tiêu là obsolete; lệnh này xóa metadata expired.\n- **C**: Sai. Không phải cú pháp RMAN.\n- **D**: Sai. Không phải cú pháp RMAN.",
+    "pitfall": "Bẫy lặp lại nhưng rất đáng nhớ: expired là mất file, obsolete là hết cần theo policy. Dọn nhầm có thể làm bạn tưởng đã giải phóng đúng thứ nhưng thực ra chưa.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 45,
+    "question": "Sau khi bulk load dữ liệu lớn vào schema `SALES`, bạn muốn thu thập optimizer statistics cho toàn schema. Chọn lệnh SQL/PLSQL đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_STATS.html",
+    "options": [
+      "```sql\nBEGIN\n  DBMS_STATS.GATHER_SCHEMA_STATS(ownname => 'SALES');\nEND;\n/\n```",
+      "```sql\nANALYZE SCHEMA SALES COMPUTE STATISTICS;\n```",
+      "```sql\nEXEC DBMS_STATS.GATHER_DATABASE_STATS('SALES');\n```",
+      "```sql\nALTER SCHEMA SALES GATHER STATISTICS;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh gather statistics cho một schema.\n\n**Bước 1 - Giải thích ngắn gọn:** `DBMS_STATS.GATHER_SCHEMA_STATS` là cách chuẩn hiện đại để thu thập optimizer statistics cho schema.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `ANALYZE` là cách cũ và không phải lựa chọn chuẩn cho optimizer stats hiện đại.\n- `GATHER_DATABASE_STATS` áp dụng cấp database, không nhận schema name theo kiểu option C.\n- Không có lệnh `ALTER SCHEMA ... GATHER STATISTICS`.\n- Statistics ảnh hưởng execution plan, nên bulk load xong thường cần gather stats.\n- Cần cân nhắc estimate_percent, degree, cascade, no_invalidate tùy môi trường.\nĐiểm chốt: Lệnh A dùng đúng package và procedure cho schema.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là cách chuẩn với `DBMS_STATS`.\n- **B**: Sai/không nên dùng cho mục tiêu hiện đại này.\n- **C**: Sai. Sai procedure và tham số.\n- **D**: Sai. Không có cú pháp này.",
+    "pitfall": "Bẫy là dùng `ANALYZE` vì từng thấy trong tài liệu cũ. Với Oracle hiện đại, hãy ưu tiên `DBMS_STATS` cho optimizer statistics.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 46,
+    "question": "Bạn muốn xem các session đang ACTIVE kèm machine và module để hỗ trợ điều tra tải hệ thống. Chọn truy vấn đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/Oracle-Database-Reference.html",
+    "options": [
+      "```sql\nSELECT sid, serial#, username, status, machine, module FROM v$session WHERE status = 'ACTIVE';\n```",
+      "```sql\nSELECT session_id, user, active FROM dba_active_sessions;\n```",
+      "```sql\nSHOW ACTIVE SESSIONS;\n```",
+      "```sql\nSELECT * FROM v$process WHERE status = 'ACTIVE';\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn truy vấn xem session active.\n\n**Bước 1 - Giải thích ngắn gọn:** `v$session` là view động trung tâm để xem session, trạng thái, user, machine, module và nhiều thông tin runtime khác.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `v$process` là process nền/server process, không thay thế thông tin session người dùng.\n- Không có lệnh `SHOW ACTIVE SESSIONS` chuẩn.\n- `USER` là hàm/keyword, không phải cột như option B mô tả.\n- `SID` và `SERIAL#` thường cần đi cùng nhau khi kill session.\n- ACTIVE không luôn nghĩa là session gây vấn đề; cần xem wait event, SQL_ID, blocking_session để kết luận.\nĐiểm chốt: Truy vấn đúng là đọc từ `v$session` với điều kiện `status='ACTIVE'`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là truy vấn DBA hay dùng.\n- **B**: Sai. Không phải view/cột chuẩn.\n- **C**: Sai. Không phải lệnh SQL*Plus chuẩn.\n- **D**: Sai. `v$process` không cho thông tin session như yêu cầu.",
+    "pitfall": "Bẫy là thấy ACTIVE rồi kết luận ngay session đó xấu. ACTIVE chỉ là trạng thái hiện tại; DBA cần thêm wait event và SQL đang chạy.",
+    "difficulty": "easy"
+  },
+  {
+    "id": 47,
+    "question": "Bạn muốn tìm session đang bị block và session nào đang block nó. Chọn truy vấn đúng nhất.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/Oracle-Database-Reference.html",
+    "options": [
+      "```sql\nSELECT sid, serial#, username, blocking_session, wait_class, event FROM v$session WHERE blocking_session IS NOT NULL;\n```",
+      "```sql\nSELECT blocker, blocked FROM dba_locks WHERE blocked = 'YES';\n```",
+      "```sql\nSHOW BLOCKING SESSIONS;\n```",
+      "```sql\nSELECT * FROM v$locked_object WHERE blocking_session IS NOT NULL;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn truy vấn từ `v$session` để thấy session bị block.\n\n**Bước 1 - Giải thích ngắn gọn:** `v$session.blocking_session` cho biết SID của session đang block session hiện tại nếu Oracle xác định được.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- `v$locked_object` hữu ích nhưng không có cột `blocking_session` theo cách option D viết.\n- Không có `SHOW BLOCKING SESSIONS` chuẩn trong SQL*Plus.\n- Blocking khác waiting chung; cần xem event/wait_class để hiểu loại chờ.\n- SID của blocker cần ghép thêm thông tin từ `v$session` nếu muốn biết user/machine của blocker.\n- Không nên kill session chỉ vì thấy block; cần hiểu transaction và ảnh hưởng nghiệp vụ.\nĐiểm chốt: Truy vấn A là cách nhanh và đúng để thấy blocked sessions.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Dùng `blocking_session` trong `v$session`.\n- **B**: Sai. Không phải view/cột chuẩn như vậy.\n- **C**: Sai. Không có lệnh này.\n- **D**: Sai. Sai cột cho view đã nêu.",
+    "pitfall": "Bẫy là tìm lock object trước khi xác định quan hệ blocker-blocked. `v$session.blocking_session` thường giúp khoanh vùng nhanh hơn.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 48,
+    "question": "Bạn đã xác định session cần kill có `SID=123` và `SERIAL#=4567`. Chọn lệnh SQL đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-SYSTEM.html",
+    "options": [
+      "```sql\nALTER SYSTEM KILL SESSION '123,4567' IMMEDIATE;\n```",
+      "```sql\nKILL SESSION 123,4567;\n```",
+      "```sql\nALTER SESSION KILL '123,4567';\n```",
+      "```sql\nALTER SYSTEM DISCONNECT USER '123,4567';\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh kill session bằng SID và SERIAL#.\n\n**Bước 1 - Giải thích ngắn gọn:** Oracle dùng `ALTER SYSTEM KILL SESSION 'sid,serial#'` để yêu cầu kết thúc một session cụ thể.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Cần cả SID và SERIAL# để tránh nhầm session khi SID được tái sử dụng.\n- `IMMEDIATE` yêu cầu xử lý nhanh hơn nhưng vẫn cần hiểu ảnh hưởng transaction.\n- Không kill bằng `ALTER SESSION`; session hiện tại không phải mục tiêu như vậy.\n- Có lệnh `DISCONNECT SESSION` khác cú pháp, nhưng option D viết sai.\n- Trên production, kill session nên có lý do rõ và ghi nhận thông tin SQL/user/machine trước.\nĐiểm chốt: Lệnh A đúng cú pháp kill session.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh thường dùng.\n- **B**: Sai. Không phải cú pháp Oracle.\n- **C**: Sai. Sai loại lệnh.\n- **D**: Sai. Sai cú pháp.",
+    "pitfall": "Bẫy là chỉ dùng SID. Trong Oracle, SID có thể tái sử dụng; `SERIAL#` giúp định danh phiên chính xác hơn.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 49,
+    "question": "Bạn dùng Data Guard Broker và muốn xem trạng thái tổng thể của cấu hình. Chọn lệnh đúng trong DGMGRL.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/dgbkr/using-data-guard-broker-to-manage-switchovers-failovers.html",
+    "options": [
+      "```sql\nSHOW CONFIGURATION;\n```",
+      "```sql\nDISPLAY DATAGUARD STATUS;\n```",
+      "```sql\nSELECT * FROM v$dataguard_config;\n```",
+      "```sql\nSHOW BROKER ALL;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh DGMGRL xem trạng thái cấu hình Data Guard Broker.\n\n**Bước 1 - Giải thích ngắn gọn:** Trong DGMGRL, `SHOW CONFIGURATION` hiển thị health/status của broker configuration.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- DGMGRL có cú pháp riêng, không phải mọi thứ đều là SQL SELECT.\n- `SHOW CONFIGURATION` khác với xem view trong database; nó hỏi broker.\n- Không có lệnh `DISPLAY DATAGUARD STATUS` chuẩn như option B.\n- Nếu status không SUCCESS, cần xem thêm `SHOW DATABASE verbose <db_unique_name>`.\n- Broker cần được cấu hình và bật thì lệnh mới có ý nghĩa.\nĐiểm chốt: Lệnh đúng là `SHOW CONFIGURATION;`.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh DGMGRL cơ bản nhất để xem broker configuration.\n- **B**: Sai. Không phải lệnh DGMGRL chuẩn.\n- **C**: Sai. Đây là SQL giả định, không phải lệnh broker.\n- **D**: Sai. Không phải cú pháp đúng.",
+    "pitfall": "Bẫy là trộn SQL*Plus với DGMGRL. Data Guard Broker có prompt và ngôn ngữ lệnh riêng.",
+    "difficulty": "medium"
+  },
+  {
+    "id": 50,
+    "question": "Trên physical standby, bạn muốn bắt đầu managed recovery ở background để apply redo. Chọn lệnh đúng.",
+    "link": "https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-DATABASE.html",
+    "options": [
+      "```sql\nALTER DATABASE RECOVER MANAGED STANDBY DATABASE DISCONNECT FROM SESSION;\n```",
+      "```sql\nALTER DATABASE START STANDBY APPLY;\n```",
+      "```sql\nRECOVER STANDBY DATABASE AUTO;\n```",
+      "```sql\nALTER SYSTEM APPLY REDO ON STANDBY;\n```"
+    ],
+    "answer": [
+      0
+    ],
+    "explanation": "**Tóm tắt yêu cầu:** Chọn lệnh khởi động managed standby recovery.\n\n**Bước 1 - Giải thích ngắn gọn:** `ALTER DATABASE RECOVER MANAGED STANDBY DATABASE DISCONNECT FROM SESSION` bắt đầu MRP apply redo và trả prompt lại cho session.\n\n**Bước 2 - Điểm dễ nhầm khi đọc đề:**\n- Managed recovery chạy trên standby, không phải primary.\n- `DISCONNECT FROM SESSION` giúp recovery chạy nền thay vì giữ session treo.\n- Không có cú pháp `START STANDBY APPLY` chuẩn như option B.\n- Nếu dùng Active Data Guard/read only apply, cú pháp có thể khác theo trạng thái mở của standby.\n- Data Guard Broker có thể quản lý apply bằng DGMGRL; nhưng câu hỏi đang hỏi SQL lệnh thủ công.\nĐiểm chốt: Lệnh A là cú pháp kinh điển để start managed recovery trên physical standby.\n\n**Bước 3 - Phân tích từng đáp án:**\n- **A**: Đúng. Đây là lệnh managed recovery thủ công.\n- **B**: Sai. Không phải cú pháp chuẩn.\n- **C**: Sai. Không phải lệnh đúng cho managed standby recovery trong ngữ cảnh này.\n- **D**: Sai. Không phải cú pháp Oracle.",
+    "pitfall": "Bẫy là nghĩ apply redo là một lệnh broker hoặc parameter hệ thống. Nếu thao tác thủ công trên standby, cụm cần nhớ là `RECOVER MANAGED STANDBY DATABASE`.",
+    "difficulty": "hard"
+  }
+]
