@@ -1663,6 +1663,39 @@
             font-size: 0.85rem;
         }
 
+        /* Explanation button compact */
+        .explanation-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(6, 182, 212, 0.08));
+            border: 1.5px solid rgba(20, 184, 166, 0.28);
+            border-radius: 50px;
+            color: var(--accent-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            backdrop-filter: blur(4px);
+            letter-spacing: 0.3px;
+        }
+
+        .explanation-btn:hover {
+            background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(20, 184, 166, 0.24);
+            text-decoration: none;
+        }
+
+        .explanation-btn i {
+            font-size: 0.85rem;
+        }
+
         .db-badges {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, max-content));
@@ -1909,21 +1942,21 @@
                 <div class="question-card">
                     <div class="question-header">
                         <div class="question-number" id="question-number">1</div>
-                        <a id="source-link-btn" class="source-link-btn" href="#" target="_blank"
-                            rel="noopener noreferrer" style="display:none;">
-                            <i class="fas fa-external-link-alt"></i> Xem câu hỏi gốc
-                        </a>
+                        <div class="question-actions" style="display: flex; gap: 10px; align-items: center;">
+                            <a id="source-link-btn" class="source-link-btn" href="#" target="_blank"
+                                rel="noopener noreferrer" style="display:none;">
+                                <i class="fas fa-external-link-alt"></i> Xem câu hỏi gốc
+                            </a>
+                            <button id="show-explanation-btn" class="explanation-btn" style="display: none;"
+                                title="Xem giải thích và lỗi thường gặp">
+                                <i class="fas fa-eye"></i> Xem Lời Giải
+                            </button>
+                        </div>
                     </div>
                     <div class="question-content" id="question-content">Question content will appear here</div>
                     <div class="options-container" id="options-container">
                         <!-- Options will be inserted here by JavaScript -->
                     </div>
-                    <!-- Action button to show explanation if answered incorrectly -->
-                    <button class="btn btn-outline" id="show-explanation-btn"
-                        style="display: none; margin-top: 25px; width: 100%; border: 2px solid var(--accent-color); color: var(--accent-color); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.12); font-weight: 600;"
-                        title="Xem giải thích và lỗi thường gặp">
-                        <i class="fas fa-eye"></i> Xem Lời Giải
-                    </button>
 
                     <div class="explanation-section" id="explanation-section">
                         <h3 class="explanation-title">Lời Giải</h3>
@@ -2225,6 +2258,10 @@ Lưu ý quan trọng:
             currentState.revealedExplanations[index] = true;
             elements.showExplanationBtn.style.display = 'none';
             showExplanation();
+            // Smoothly scroll to the explanation section
+            setTimeout(() => {
+                elements.explanationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
         });
 
         // Add event listener for text input
